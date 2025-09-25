@@ -42,6 +42,13 @@ class TicTacToe(object):
             return True
         else:
             return ValueError(f'Error: Board location ({r},{c}) is already filled with a piece.')
+    
+    def place_piece(self, piece, loc):
+        # get row, column coordinates
+        r, c = loc
+
+        self.state[r][c] = piece
+        return
         
     def step(self, action):
         """
@@ -56,6 +63,7 @@ class TicTacToe(object):
         self.valid_action(loc=action)
 
         # place the piece where specified
+        self.place_piece(piece=piece, loc=action)
 
         # check if a player has won or not
 
