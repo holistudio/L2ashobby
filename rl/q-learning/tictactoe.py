@@ -12,10 +12,17 @@ class TicTacToe(object):
         self.terminal = False
 
         # player scores
-        self.scores = (0, 0) # player 1 and 2 start assuming a draw
+        self.scores = (None, None)
+
+
         # ( 1, -1): player 1 wins
         # (-1,  1): player 2 wins
         # ( 0,  0): draw
+        self.possible_scores = {
+            "p1_win": ( 1, -1),
+            "p2_win": (-1,  1),
+            "draw": (0, 0)
+        }
 
     def get_piece(self):
         """
