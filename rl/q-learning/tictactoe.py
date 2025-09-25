@@ -49,7 +49,79 @@ class TicTacToe(object):
 
         self.state[r][c] = piece
         return
+    
+    def check_victory(self):
+        """
+        Check connect 3 pattern in all possible variations
+        """
+        def check_rows(board):
+            """
+            Check connect 3 pattern in rows
+            """
+            for i in range(3):
+                # print(f"Checking row {i}...")
+                # check if none of the locations in the row are blank
+                location_blank = (board[i][0] == " ") or (board[i][1] == " ") or (board[i][2] == " ")
+                if not location_blank:
+                    # check if all pieces are same for this row
+                    if board[i][0] == board[i][1]:
+                        if board[i][1] == board[i][2]:
+                            return True
+            return False
         
+        def check_cols(board):
+            """
+            Check connect 3 pattern in columns
+            """
+            for i in range(3):
+                # print(f"Checking col {i}...")
+                # check if none of the locations in the col are blank
+                location_blank = (board[0][i] == " ") or (board[1][i] == " ") or (board[2][i] == " ")
+                if not location_blank:
+                    # check if all pieces are same for this col
+                    if board[0][i] == board[1][i]:
+                        if board[1][i] == board[2][i]:
+                            return True
+            return False
+        
+        def check_diags(board):
+            """
+            Check connect 3 pattern in diagonals
+            """
+            # top left to bottom right diagonal
+            # print('Checking diagonal 1...')
+            # check if none of the locations in the col are blank
+            location_blank = (board[0][0] == " ") or (board[1][1] == " ") or (board[2][2] == " ")
+            if not location_blank:
+                # check if all pieces are same for this col
+                if board[0][0] == board[1][1]:
+                    if board[1][1] == board[2][2]:
+                        return True
+            
+            # top right to bottom left diagonal
+            # print('Checking diagonal 2...')
+            # check if none of the locations in the col are blank
+            location_blank = (board[2][0] == " ") or (board[1][1] == " ") or (board[0][2] == " ")
+            if not location_blank:
+                # check if all pieces are same for this col
+                if board[2][0] == board[1][1]:
+                    if board[1][1] == board[0][2]:
+                        winning_piece = board[0][2]
+                        return True
+            return False
+        
+        # immediately return True if one of the checks is met
+        if check_rows(self.board):
+            return True
+        
+        if check_cols(self.board):
+            return True
+        
+        if check_diags(self.board):
+            return True
+        
+        return False
+    
     def step(self, action):
         """
         action: a board location to place the next piece
@@ -65,8 +137,14 @@ class TicTacToe(object):
         # place the piece where specified
         self.place_piece(piece=piece, loc=action)
 
-        # check if a player has won or not
+        # check if the most recent move/player has won or not
+        victory = self.check_victory()
 
         # check if the game ends in a draw
 
+        # assign scores to each player if the game is done
+
         # update turn index
+
+        # return state, terminal, rewards
+        return self.state, self.terminal, self.scores
