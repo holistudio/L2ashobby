@@ -25,6 +25,23 @@ class TicTacToe(object):
             return self.pieces[0]
         else:
             return self.pieces[1]
+    
+    def valid_action(self, loc):
+        """
+        Check if the board location is empty/can receive a piece.
+        """
+        # get row, column coordinates
+        r, c = loc
+
+        # check if location is within bounds of the board
+        if (r > 2 or r < 0) or (c > 2 or c < 0):
+             return ValueError(f'Error: Board location ({r},{c}) is out of bounds.')
+
+        # if the board location is blank, the user move is valid
+        if self.board[r][c] == " ":
+            return True
+        else:
+            return ValueError(f'Error: Board location ({r},{c}) is already filled with a piece.')
         
     def step(self, action):
         """
@@ -36,6 +53,7 @@ class TicTacToe(object):
         piece = self.get_piece()
 
         # check if the action is valid
+        self.valid_action(loc=action)
 
         # place the piece where specified
 
