@@ -129,6 +129,11 @@ class TicTacToe(object):
         
         return False
     
+    def check_draw(self, victory):
+        if self.turn >= 8 and not victory:
+            return True
+        return False
+    
     def step(self, action):
         """
         action: a board location to place the next piece
@@ -148,6 +153,7 @@ class TicTacToe(object):
         victory = self.check_victory()
 
         # check if the game ends in a draw
+        self.terminal = victory or self.check_draw(victory)
 
         # assign scores to each player if the game is done
 
