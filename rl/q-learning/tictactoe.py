@@ -184,7 +184,7 @@ class TicTacToe(object):
 
         # assign scores to each player if the game is done
         if self.terminal:
-            self.assign_scores(win)
+            self.scores = self.assign_scores(win)
         else:
             # update turn index
             self.turn += 1
