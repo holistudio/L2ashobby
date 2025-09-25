@@ -17,6 +17,15 @@ class TicTacToe(object):
         # (-1,  1): player 2 wins
         # ( 0,  0): draw
 
+    def get_piece(self):
+        """
+        Alternate between X or O piece depending on the turn index
+        """
+        if self.turn % 2 == 0:
+            return self.pieces[0]
+        else:
+            return self.pieces[1]
+        
     def step(self, action):
         """
         action: a board location to place the next piece
@@ -24,13 +33,14 @@ class TicTacToe(object):
         (action can come from a human or AI)
         """
         # get current piece
+        piece = self.get_piece()
 
         # check if the action is valid
 
         # place the piece where specified
 
         # check if a player has won or not
-        
+
         # check if the game ends in a draw
 
         # update turn index
