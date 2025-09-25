@@ -20,7 +20,10 @@ class RandomAgent(object):
 def test():
     agent = RandomAgent()
 
-    board = [[" "," "," "],[" "," "," "],[" "," "," "]]
+    # board = [[" "," "," "],[" "," "," "],[" "," "," "]]
+    # print(agent.action(board))
+
+    board = [["X"," ","O"],["X","X","O"],["O"," ","X"]]
     print(agent.action(board))
 
 if __name__ == '__main__':
