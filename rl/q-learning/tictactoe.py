@@ -16,3 +16,21 @@ class TicTacToe(object):
         # ( 1, -1): player 1 wins
         # (-1,  1): player 2 wins
         # ( 0,  0): draw
+
+    def step(self, action):
+        """
+        action: a board location to place the next piece
+
+        (action can come from a human or AI)
+        """
+        # get current piece
+
+        # check if the action is valid
+
+        # place the piece where specified
+
+        # check if a player has won or not
+        
+        # check if the game ends in a draw
+
+        # update turn index
