@@ -175,3 +175,15 @@ class TicTacToe(object):
 
         # return state, terminal, rewards
         return self.state, self.terminal, self.scores
+    
+    def reset(self):
+        # initial empty board
+        self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
+
+        self.turn = 0 # turn index
+
+        # track if game is over or not
+        self.terminal = False
+
+        # player scores
+        self.scores = (None, None)
