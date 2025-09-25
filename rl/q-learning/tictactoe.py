@@ -57,7 +57,7 @@ class TicTacToe(object):
         self.state[r][c] = piece
         return
     
-    def check_victory(self):
+    def check_win(self):
         """
         Check connect 3 pattern in all possible variations
         """
@@ -129,10 +129,21 @@ class TicTacToe(object):
         
         return False
     
-    def check_draw(self, victory):
-        if self.turn >= 8 and not victory:
+    def check_draw(self, win):
+        if not win and self.turn >= 8:
             return True
         return False
+    
+    def assign_scores(self, win):
+        # if the game ends with win
+        if win:
+            # determine the latest piece and assign player scores accordingly
+            if self.turn % 2 == 0:
+                return self.possible_scores["p1_win"]
+            return self.possible_scores["p2_win"]
+        else:
+            # otherwise assign draw scores
+            return self.possible_scores["draw"]
     
     def step(self, action):
         """
@@ -150,14 +161,17 @@ class TicTacToe(object):
         self.place_piece(piece=piece, loc=action)
 
         # check if the most recent move/player has won or not
-        victory = self.check_victory()
+        win = self.check_win()
 
         # check if the game ends in a draw
-        self.terminal = victory or self.check_draw(victory)
+        self.terminal = win or self.check_draw(win)
 
         # assign scores to each player if the game is done
-
-        # update turn index
+        if self.terminal:
+            self.assign_scores(win)
+        else:
+            # update turn index
+            self.turn += 1
 
         # return state, terminal, rewards
         return self.state, self.terminal, self.scores
