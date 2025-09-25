@@ -1,5 +1,5 @@
 class TicTacToe(object):
-    def __init__(self):
+    def __init__(self, win_score=1, loss_score=-1):
         # initial empty board
         self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
 
@@ -19,8 +19,8 @@ class TicTacToe(object):
         # (-1,  1): player 2 wins
         # ( 0,  0): draw
         self.possible_scores = {
-            "p1_win": ( 1, -1),
-            "p2_win": (-1,  1),
+            "p1_win": ( win_score, loss_score),
+            "p2_win": (loss_score,  win_score),
             "draw": (0, 0)
         }
 
