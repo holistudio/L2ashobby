@@ -187,3 +187,5 @@ class TicTacToe(object):
 
         # player scores
         self.scores = (None, None)
+
+        return self.state, self.terminal, self.scores
