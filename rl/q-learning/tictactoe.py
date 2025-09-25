@@ -24,6 +24,22 @@ class TicTacToe(object):
             "draw": (0, 0)
         }
 
+    def display(self):
+        """
+        Display the board to the terminal
+        """
+        print()
+        print("BOARD")
+        print("=====")
+        for i,row in enumerate(self.state):
+            row_disp = ("|").join(row)
+            print(row_disp)
+            if i < 2:
+                print("-----")
+        print("=====")
+        print()
+        return
+    
     def get_piece(self):
         """
         Alternate between X or O piece depending on the turn index
@@ -173,6 +189,7 @@ class TicTacToe(object):
             # update turn index
             self.turn += 1
 
+        self.display()
         # return state, terminal, rewards
         return self.state, self.terminal, self.scores
     
@@ -188,4 +205,8 @@ class TicTacToe(object):
         # player scores
         self.scores = (None, None)
 
+        print()
+        print()
+        print("### NEW GAME ###")
+        self.display()
         return self.state, self.terminal, self.scores
