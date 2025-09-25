@@ -45,7 +45,7 @@ class TicTacToe(object):
              return ValueError(f'Error: Board location ({r},{c}) is out of bounds.')
 
         # if the board location is blank, the user move is valid
-        if self.board[r][c] == " ":
+        if self.state[r][c] == " ":
             return True
         else:
             return ValueError(f'Error: Board location ({r},{c}) is already filled with a piece.')
@@ -118,13 +118,13 @@ class TicTacToe(object):
             return False
         
         # immediately return True if one of the checks is met
-        if check_rows(self.board):
+        if check_rows(self.state):
             return True
         
-        if check_cols(self.board):
+        if check_cols(self.state):
             return True
         
-        if check_diags(self.board):
+        if check_diags(self.state):
             return True
         
         return False
