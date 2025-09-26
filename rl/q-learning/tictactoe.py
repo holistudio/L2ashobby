@@ -1,5 +1,5 @@
 class TicTacToe(object):
-    def __init__(self, win_score=1, loss_score=-1):
+    def __init__(self, win_score=1, loss_score=-1, display=False):
         # initial empty board
         self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
 
@@ -23,6 +23,8 @@ class TicTacToe(object):
             "p2_win": (loss_score,  win_score),
             "draw": (0, 0)
         }
+
+        self.display_board = display
 
     def display(self):
         """
@@ -189,7 +191,9 @@ class TicTacToe(object):
             # update turn index
             self.turn += 1
 
-        self.display()
+        if self.display_board:
+            self.display()
+
         # return state, terminal, rewards
         return self.state, self.terminal, self.scores
     
@@ -205,8 +209,9 @@ class TicTacToe(object):
         # player scores
         self.scores = (None, None)
 
-        print()
-        print()
-        print("### NEW GAME ###")
-        self.display()
+        if self.display_board:
+            print()
+            print()
+            print("### NEW GAME ###")
+            self.display()
         return self.state, self.terminal, self.scores
