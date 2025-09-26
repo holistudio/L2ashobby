@@ -1,6 +1,10 @@
 import random
 
 class RandomAgent(object):
+    def __init__(self):
+        self.experience = []
+        pass
+
     def action(self, state):
         def ix_to_loc(ix):
             # convert board index into a r,c location
