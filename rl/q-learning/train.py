@@ -31,7 +31,7 @@ def main():
     agent = RandomAgent()
 
     for e in range(EPISODES):
-        state, terminal, reward = environment.reset()
+        state, terminal, rewards = environment.reset()
 
         terminal = False
 
