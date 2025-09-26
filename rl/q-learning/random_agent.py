@@ -2,6 +2,7 @@ import random
 
 class RandomAgent(object):
     def __init__(self):
+        # stores experience in the current game
         self.experience = []
         pass
 
@@ -26,6 +27,9 @@ class RandomAgent(object):
     
     def update(self):
         # learns nothing!
+
+        # after learning, clear experience
+        self.experience = []
         pass
 
 def test():
