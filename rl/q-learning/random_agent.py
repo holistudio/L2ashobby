@@ -23,6 +23,10 @@ class RandomAgent(object):
         select_ix = random.choice(blank_ixs)
         loc = ix_to_loc(select_ix)
         return loc
+    
+    def update(self):
+        # learns nothing!
+        pass
 
 def test():
     agent = RandomAgent()
