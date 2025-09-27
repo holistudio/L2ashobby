@@ -4,7 +4,15 @@ class QLearningAgent(object):
     def __init__(self, eps = 1.0):
         # stores experience in the current game
         self.experience = []
+
+        self.eps = eps
+        self.step = 0
         pass
+
+    def eps_decay(self):
+        # decrease epsilon based on 
+        # self.eps = self.step * exp()
+        return self.eps
 
     def action(self, state):
         def ix_to_loc(ix):
