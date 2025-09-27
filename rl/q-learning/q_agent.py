@@ -3,7 +3,7 @@ import math
 
 class QLearningAgent(object):
     def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01):
-        q_lookup = {}
+        self.q_lookup = {}
         # snippet
         # q_lookup = {
         #     ...
@@ -32,14 +32,35 @@ class QLearningAgent(object):
         # randomly select among the indices
         return random.choice(ixs)
     
+    def state_to_key(self, state):
+        # TODO: convert state into a string for Q-lookup table row/key
+        return state_key
+    
     def exploit(self, state, ixs):
-        # if new state not in the lookup table
+        # parse state into a lookup key
+        state_key = self.state_to_key(state)
 
-        # if state exists in the lookup table
-        # find the max Q-value
-        # if there is only one action
-        # if there is more than one action with max-Q-value
-        # randomly select among those actions
+        if state_key in self.q_lookup.keys():
+            # if state exists in the lookup table
+            # check values in the table row
+            row = self.q_lookup[state_key]
+
+            # find the max Q-value
+            max_q = max(row)
+
+            if row.count(max_q) == 1:
+                # if there is only one action
+                # get the index of the max Q-value
+                ix = row.index(max_q)
+            else:
+                # if there is more than one action with max-Q-value
+                # randomly select among those actions
+                max_ixs = [i for i,v in enumerate(row) if v==max_q]
+                ix = self.explore(max_ixs)
+        else:
+            # if new state not in the lookup table
+            # explore!
+            ix = self.explore(ixs)
 
         # TODO: ensure that all 9 action keys are added to the lookup table for encountered state
         return ix
