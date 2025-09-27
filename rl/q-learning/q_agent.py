@@ -32,6 +32,18 @@ class QLearningAgent(object):
         # randomly select among the indices
         return random.choice(ixs)
     
+    def exploit(self, state, ixs):
+        # if new state not in the lookup table
+
+        # if state exists in the lookup table
+        # find the max Q-value
+        # if there is only one action
+        # if there is more than one action with max-Q-value
+        # randomly select among those actions
+
+        # TODO: ensure that all 9 action keys are added to the lookup table for encountered state
+        return ix
+    
 
     def action(self, state):
         def ix_to_loc(ix):
@@ -52,6 +64,7 @@ class QLearningAgent(object):
             select_ix = self.explore(blank_ixs)
         else:
             # TODO: follow Q-lookup table
+            select_ix = self.exploit(state, blank_ixs)
             pass
 
         # convert board index into row, col location
