@@ -14,7 +14,6 @@ class TicTacToe(object):
         # player scores
         self.scores = (None, None)
 
-
         # ( 1, -1): player 1 wins
         # (-1,  1): player 2 wins
         # ( 0,  0): draw
@@ -23,6 +22,8 @@ class TicTacToe(object):
             "p2_win": (loss_score,  win_score),
             "draw": (0, 0)
         }
+        
+        self.score_board = []
 
         self.display_board = display
 
@@ -197,7 +198,14 @@ class TicTacToe(object):
         # return state, terminal, rewards
         return self.state, self.terminal, self.scores
     
+    def update_score_board(self):
+        self.score_board.append(self.scores)
+        pass
+
     def reset(self):
+        # update score board
+        self.update_score_board()
+
         # initial empty board
         self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
 
@@ -215,3 +223,25 @@ class TicTacToe(object):
             print("### NEW GAME ###")
             self.display()
         return self.state, self.terminal, self.scores
+    
+    def score_stats(self):
+        p1_stats=[0,0,0] # win-loss-draw
+        p2_stats=[0,0,0]
+        for result in self.score_board:
+            if result[0] == 1:
+                p1_stats[0]+=1
+                p2_stats[1]+=1
+            elif result[0] == -1:
+                p1_stats[1]+=1
+                p2_stats[0]+=1
+            else:
+                p1_stats[2]+=1
+                p2_stats[2]+=1
+
+        p1_win_rate = p1_stats[0]* 100/sum(p1_stats) 
+        p2_win_rate = p2_stats[0]* 100/sum(p2_stats)
+
+        print(f'Player 1 ({p1_win_rate:.2f}%): {p1_stats[0]} W - {p1_stats[1]} L - {p1_stats[2]} D ')
+        print(f'Player 2 ({p2_win_rate:.2f}%): {p2_stats[0]} W - {p2_stats[1]} L - {p2_stats[2]} D ')
+
+        pass
