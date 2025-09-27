@@ -95,7 +95,7 @@ class QLearningAgent(object):
             # randomly select among the remaining blank locations
             select_ix = self.explore(blank_ixs)
         else:
-            # TODO: follow Q-lookup table
+            # follow Q-lookup table
             select_ix = self.exploit(state_key, blank_ixs)
             pass
 
