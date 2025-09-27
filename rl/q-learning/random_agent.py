@@ -25,7 +25,18 @@ class RandomAgent(object):
         loc = ix_to_loc(select_ix)
         return loc
     
-    def update(self):
+    def update_experience(self, states, actions, rewards, terminals):
+        for exp in zip(states, actions, rewards, terminals):
+            state, action, reward, terminal = exp
+            self.experience.append({
+                "state": state,
+                "action": action,
+                "rewards": reward,
+                "terminal": terminal
+            })
+        pass
+
+    def update_policy(self):
         # learns nothing!
 
         # after learning, clear experience
