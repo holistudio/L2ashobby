@@ -42,6 +42,9 @@ def main():
             # move environment a step
             state, terminal, rewards = environment.step(action)
 
+        # update agent policy
+        agent.update_policy()
+
         score_board.append(rewards)
 
     score_stats(score_board)
