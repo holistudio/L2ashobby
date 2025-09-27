@@ -3,6 +3,14 @@ import math
 
 class QLearningAgent(object):
     def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01):
+        q_lookup = {}
+        # snippet
+        # q_lookup = {
+        #     ...
+        #     'X,O,X;_,_,_;_,_,_;': [0,0,0,0,0,0,0,0,0],
+        #     ...
+        # }
+
         # stores experience in the current game
         self.experience = []
 
@@ -19,6 +27,11 @@ class QLearningAgent(object):
 
         self.step += 1
         return self.eps
+    
+    def explore(self, ixs):
+        # randomly select among the indices
+        return random.choice(ixs)
+    
 
     def action(self, state):
         def ix_to_loc(ix):
@@ -36,7 +49,7 @@ class QLearningAgent(object):
 
         if random.random() < self.eps:
             # randomly select among the remaining blank locations
-            select_ix = random.choice(blank_ixs)
+            select_ix = self.explore(blank_ixs)
         else:
             # TODO: follow Q-lookup table
             pass
