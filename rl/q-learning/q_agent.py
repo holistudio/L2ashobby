@@ -38,7 +38,7 @@ class QLearningAgent(object):
             # randomly select among the remaining blank locations
             select_ix = random.choice(blank_ixs)
         else:
-            # follow Q-table
+            # TODO: follow Q-lookup table
             pass
 
         # convert board index into row, col location
@@ -60,7 +60,7 @@ class QLearningAgent(object):
         pass
 
     def update_policy(self):
-        # learns nothing!
+        # TODO: update Q-lookup table based on experience
 
         # after learning, clear experience
         self.experience = []
