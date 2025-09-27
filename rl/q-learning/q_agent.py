@@ -12,6 +12,8 @@ class QLearningAgent(object):
     def eps_decay(self):
         # decrease epsilon based on 
         # self.eps = self.step * exp()
+        
+        self.step += 1
         return self.eps
 
     def action(self, state):
