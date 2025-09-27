@@ -1,18 +1,22 @@
 import random
+import math
 
 class QLearningAgent(object):
-    def __init__(self, eps = 1.0):
+    def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01):
         # stores experience in the current game
         self.experience = []
 
-        self.eps = eps
+        self.epsilon = eps
+        self.min_epsilon = min_eps
+        self.max_epsilon = max_eps
+        self.decay_rate = decay_rate
         self.step = 0
         pass
 
-    def eps_decay(self):
-        # decrease epsilon based on 
-        # self.eps = self.step * exp()
-        
+    def epsilon_decay(self):
+        # decrease epsilon based on steps
+        self.epsilon = self.min_epsilon + (self.max_epsilon - self.min_epsilon) * math.exp(-self.decay_rate * self.step)
+
         self.step += 1
         return self.eps
 
@@ -37,7 +41,11 @@ class QLearningAgent(object):
             # follow Q-table
             pass
 
+        # convert board index into row, col location
         loc = ix_to_loc(select_ix)
+
+        # update epsilon
+        self.epsilon_decay()
         return loc
     
     def update_experience(self, states, actions, rewards, terminals):
