@@ -131,7 +131,8 @@ def test():
     # print(agent.action(board))
 
     board = [["X"," ","O"],["X","X","O"],["O"," ","X"]]
-    print(agent.action(board))
+    # print(agent.action(board))
+    print(agent.state_to_key(board))
 
 if __name__ == '__main__':
     test()
