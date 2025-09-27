@@ -28,8 +28,13 @@ class QLearningAgent(object):
         blank_ixs = [i for i,e in enumerate(board_flat) if e == " "]
         # print(blank_ixs)
 
-        # randomly select among the remaining blank locations
-        select_ix = random.choice(blank_ixs)
+        if random.random() < self.eps:
+            # randomly select among the remaining blank locations
+            select_ix = random.choice(blank_ixs)
+        else:
+            # follow Q-table
+            pass
+
         loc = ix_to_loc(select_ix)
         return loc
     
