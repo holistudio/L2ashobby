@@ -28,18 +28,26 @@ class QLearningAgent(object):
         self.step += 1
         return self.eps
     
+    def state_to_key(self, state):
+        # convert state into a string for Q-lookup table row/key
+        state_key = ""
+        for row in state:
+            for i,item in enumerate(row):
+                if item == " ":
+                    state_key += "_"
+                else:
+                    state_key += item
+                if i < len(row)-1:
+                    state_key += ","
+                else:
+                    state_key += ";"
+        return state_key
+    
     def explore(self, ixs):
         # randomly select among the indices
         return random.choice(ixs)
     
-    def state_to_key(self, state):
-        # TODO: convert state into a string for Q-lookup table row/key
-        return state_key
-    
-    def exploit(self, state, ixs):
-        # parse state into a lookup key
-        state_key = self.state_to_key(state)
-
+    def exploit(self, state_key, ixs):
         if state_key in self.q_lookup.keys():
             # if state exists in the lookup table
             # check values in the table row
@@ -73,6 +81,9 @@ class QLearningAgent(object):
             c = ix % 3
             return (r,c)
         
+        # parse state into a lookup key
+        state_key = self.state_to_key(state)
+
         # identify blank locations on the board
         board_flat = [e for row in state for e in row]
         # print(board_flat)
@@ -85,7 +96,7 @@ class QLearningAgent(object):
             select_ix = self.explore(blank_ixs)
         else:
             # TODO: follow Q-lookup table
-            select_ix = self.exploit(state, blank_ixs)
+            select_ix = self.exploit(state_key, blank_ixs)
             pass
 
         # convert board index into row, col location
