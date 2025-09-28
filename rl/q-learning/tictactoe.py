@@ -188,6 +188,8 @@ class TicTacToe(object):
         # assign scores to each player if the game is done
         if self.terminal:
             self.scores = self.assign_scores(win)
+            # update score board
+            self.update_score_board()
         else:
             # update turn index
             self.turn += 1
@@ -199,13 +201,12 @@ class TicTacToe(object):
         return self.state, self.terminal, self.scores
     
     def update_score_board(self):
+        print("\n## UPDATE SCORE BOARD ##")
+        print(self.scores)
         self.score_board.append(self.scores)
         pass
 
     def reset(self):
-        # update score board
-        self.update_score_board()
-
         # initial empty board
         self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
 
@@ -225,9 +226,12 @@ class TicTacToe(object):
         return self.state, self.terminal, self.scores
     
     def score_stats(self):
+        print()
+        print("## SCORE BOARD ##")
         p1_stats=[0,0,0] # win-loss-draw
         p2_stats=[0,0,0]
         for result in self.score_board:
+            print(result)
             if result[0] == 1:
                 p1_stats[0]+=1
                 p2_stats[1]+=1
