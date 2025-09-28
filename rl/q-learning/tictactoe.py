@@ -201,8 +201,8 @@ class TicTacToe(object):
         return self.state, self.terminal, self.scores
     
     def update_score_board(self):
-        print("\n## UPDATE SCORE BOARD ##")
-        print(self.scores)
+        # print("\n## UPDATE SCORE BOARD ##")
+        # print(self.scores)
         self.score_board.append(self.scores)
         pass
 
@@ -231,7 +231,7 @@ class TicTacToe(object):
         p1_stats=[0,0,0] # win-loss-draw
         p2_stats=[0,0,0]
         for result in self.score_board:
-            print(result)
+            # print(result)
             if result[0] == 1:
                 p1_stats[0]+=1
                 p2_stats[1]+=1
