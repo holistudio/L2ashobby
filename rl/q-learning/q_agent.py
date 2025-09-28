@@ -144,7 +144,7 @@ class QLearningAgent(object):
             # convert state to lookup table key
             state_key = self.state_to_key(state)
 
-            # TODO: convert (r,c) action into index
+            # convert (r,c) action into index
             action_i = self.loc_to_ix(action)
 
             # get old q-value from q_lookup table
