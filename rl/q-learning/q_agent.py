@@ -109,15 +109,17 @@ class QLearningAgent(object):
         self.epsilon_decay()
         return loc
     
-    def update_experience(self, states, actions, rewards, terminals):
-        # print()
-        # print("# UPDATING EXPERIENCE #")
-        for exp in zip(states, actions, rewards, terminals):
-            state, action, reward, terminal = exp
-            # print(state)
+    def update_experience(self, states, actions, next_states, rewards, terminals):
+        print()
+        print("# UPDATING EXPERIENCE #")
+        print(len(states), len(actions), len(next_states), len(rewards), len(terminals))
+        for exp in zip(states, actions, next_states, rewards, terminals):
+            state, action, next_state, reward, terminal = exp
+            print(state, action, reward, terminal)
             self.experience.append({
                 "state": state,
                 "action": action,
+                "next_state": next_state,
                 "rewards": reward,
                 "terminal": terminal
             })
@@ -135,7 +137,7 @@ class QLearningAgent(object):
         print()
         print("## UPDATING POLICY ##")
         # loop through experience
-        for i in range(len(self.experience)-1):
+        for i in range(len(self.experience)):
             # track the turn index and identify the appropriate player
             if i % 2 == 0:
                 pix = 0
@@ -166,7 +168,7 @@ class QLearningAgent(object):
 
             # if it's not the end of the experience (guaranteed by ending at len(experience)-1))
             # get the next state and next max q-value
-            next_state =  self.experience[i+1]["state"]
+            next_state =  self.experience[i]["next_state"]
             next_state_key = self.state_to_key(next_state)
 
             if not (next_state_key in self.q_lookup.keys()):

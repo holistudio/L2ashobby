@@ -17,6 +17,7 @@ def main():
 
     for e in range(EPISODES):
         episode_states = []
+        episode_next_states = []
         episode_actions = []
         episode_rewards = []
         episode_terminal = []
@@ -36,13 +37,14 @@ def main():
 
             # move environment a step
             state, terminal, rewards = environment.step(action)
+            episode_next_states.append(copy.deepcopy(state))
             episode_rewards.append(rewards)
             episode_terminal.append(terminal)
 
         print(action,rewards)
 
         # update agent experience
-        agent.update_experience(episode_states, episode_actions, episode_rewards, episode_terminal)
+        agent.update_experience(episode_states, episode_actions, episode_next_states, episode_rewards, episode_terminal)
 
         # update agent policy
         agent.update_policy()
