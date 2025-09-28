@@ -120,6 +120,10 @@ class QLearningAgent(object):
             })
         pass
 
+    def loc_to_ix(loc):
+        r,c = loc
+        ix = r*3 + c
+        return ix
     def update_policy(self):
         """
         update Q-lookup table based on experience in a single episode
