@@ -2,7 +2,7 @@ import random
 import math
 
 class QLearningAgent(object):
-    def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01):
+    def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01, alpha=0.1, gamma=0.8):
         self.q_lookup = {}
         # snippet
         # q_lookup = {
@@ -19,6 +19,9 @@ class QLearningAgent(object):
         self.max_epsilon = max_eps
         self.decay_rate = decay_rate
         self.step = 0
+
+        self.alpha = alpha
+        self.gamma = gamma
         pass
 
     def epsilon_decay(self):
@@ -118,7 +121,41 @@ class QLearningAgent(object):
         pass
 
     def update_policy(self):
-        # TODO: update Q-lookup table based on experience
+        """
+        update Q-lookup table based on experience in a single episode
+        """
+        # loop through experience
+        for i in range(len(self.experience)-1):
+            # track the turn index and identify the appropriate player
+            if i % 2 == 0:
+                pix = 0
+            else:
+                pix = 1
+
+            # get state action and reward for the appropriate player
+            state, action = self.experience[i]["state"], self.experience[i]["action"]
+            reward = self.experience[i]["rewards"][pix]
+
+            # convert state to lookup table key
+            state_key = self.state_to_key(state)
+
+            # TODO: convert (r,c) action into index
+            action_i = self.loc_to_ix(action)
+
+            # get old q-value from q_lookup table
+            old_q = self.q_lookup[state_key][action_i]
+
+            # if it's not the end of the experience (guaranteed by ending at len(experience)-1))
+            # get the next state and next max q-value
+            next_state =  self.experience[i+1]["state"]
+            next_state_key = self.state_to_key(next_state)
+            next_max = max(self.q_lookup[next_state_key])
+
+            # update new value
+            new_q = (1 - self.alpha) * old_q + self.alpha * (reward + self.gamma * next_max)
+
+            self.q_lookup[state_key][action_i] = new_q
+
 
         # after learning, clear experience
         self.experience = []
