@@ -140,6 +140,8 @@ class QLearningAgent(object):
             # get state action and reward for the appropriate player
             state, action = self.experience[i]["state"], self.experience[i]["action"]
             reward = self.experience[i]["rewards"][pix]
+            if reward == None:
+                reward = 0.0
 
             # convert state to lookup table key
             state_key = self.state_to_key(state)
@@ -148,12 +150,21 @@ class QLearningAgent(object):
             action_i = self.loc_to_ix(action)
 
             # get old q-value from q_lookup table
+            if not (state_key in self.q_lookup.keys()):
+                # if never encountered state, initialize
+                self.q_lookup[state_key] = [0 for i in range(9)]
+
             old_q = self.q_lookup[state_key][action_i]
 
             # if it's not the end of the experience (guaranteed by ending at len(experience)-1))
             # get the next state and next max q-value
             next_state =  self.experience[i+1]["state"]
             next_state_key = self.state_to_key(next_state)
+
+            if not (next_state_key in self.q_lookup.keys()):
+                # if never encountered state, initialize
+                self.q_lookup[next_state_key] = [0 for i in range(9)]
+            
             next_max = max(self.q_lookup[next_state_key])
 
             # update new value
