@@ -110,12 +110,12 @@ class QLearningAgent(object):
         return loc
     
     def update_experience(self, states, actions, next_states, rewards, terminals):
-        print()
-        print("# UPDATING EXPERIENCE #")
-        print(len(states), len(actions), len(next_states), len(rewards), len(terminals))
+        # print()
+        # print("# UPDATING EXPERIENCE #")
+        # print(len(states), len(actions), len(next_states), len(rewards), len(terminals))
         for exp in zip(states, actions, next_states, rewards, terminals):
             state, action, next_state, reward, terminal = exp
-            print(state, action, reward, terminal)
+            # print(state, action, reward, terminal)
             self.experience.append({
                 "state": state,
                 "action": action,
@@ -181,7 +181,8 @@ class QLearningAgent(object):
             new_q = (1 - self.alpha) * old_q + self.alpha * (reward + self.gamma * next_max)
 
             self.q_lookup[state_key][action_i] = new_q
-
+        
+        print(self.experience[i]["next_state"])
         print()
         print("Q-table")
         for key in self.q_lookup:
