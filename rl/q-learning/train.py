@@ -13,7 +13,7 @@ def main():
     environment = TicTacToe(display=True)
 
     # agent = RandomAgent()
-    agent = QLearningAgent()
+    agent = QLearningAgent(alpha=1.0, gamma=1.0)
 
     for e in range(EPISODES):
         episode_states = []
