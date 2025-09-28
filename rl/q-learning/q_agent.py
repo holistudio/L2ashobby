@@ -29,7 +29,7 @@ class QLearningAgent(object):
         self.epsilon = self.min_epsilon + (self.max_epsilon - self.min_epsilon) * math.exp(-self.decay_rate * self.step)
 
         self.step += 1
-        return self.eps
+        return self.epsilon
     
     def state_to_key(self, state):
         # convert state into a string for Q-lookup table row/key
@@ -94,7 +94,7 @@ class QLearningAgent(object):
         blank_ixs = [i for i,e in enumerate(board_flat) if e == " "]
         # print(blank_ixs)
 
-        if random.random() < self.eps:
+        if random.random() < self.epsilon:
             # randomly select among the remaining blank locations
             select_ix = self.explore(blank_ixs)
         else:
@@ -120,10 +120,11 @@ class QLearningAgent(object):
             })
         pass
 
-    def loc_to_ix(loc):
+    def loc_to_ix(self, loc):
         r,c = loc
         ix = r*3 + c
         return ix
+    
     def update_policy(self):
         """
         update Q-lookup table based on experience in a single episode
