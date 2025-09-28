@@ -1,7 +1,8 @@
 from tictactoe import TicTacToe
 from random_agent import RandomAgent
+from q_agent import QLearningAgent
 
-EPISODES = 100
+EPISODES = 3
 
 
 
@@ -9,7 +10,8 @@ def main():
 
     environment = TicTacToe()
 
-    agent = RandomAgent()
+    # agent = RandomAgent()
+    agent = QLearningAgent()
 
     for e in range(EPISODES):
         episode_states = []
