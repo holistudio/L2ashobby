@@ -10,10 +10,11 @@ EPISODES = 1
 
 def main():
 
-    environment = TicTacToe(display=True)
+    environment = TicTacToe()
 
     # agent = RandomAgent()
-    agent = QLearningAgent(alpha=1.0, gamma=1.0)
+    agent = QLearningAgent()
+    # agent = QLearningAgent(alpha=1.0, gamma=1.0)
 
     for e in range(EPISODES):
         episode_states = []
@@ -33,7 +34,7 @@ def main():
             # agent plays a piece
             action = agent.action(state)
             episode_actions.append(action)
-            print(action,rewards)
+            # print(action,rewards)
 
             # move environment a step
             state, terminal, rewards = environment.step(action)
@@ -41,7 +42,7 @@ def main():
             episode_rewards.append(rewards)
             episode_terminal.append(terminal)
 
-        print(action,rewards)
+        # print(action,rewards)
 
         # update agent experience
         agent.update_experience(episode_states, episode_actions, episode_next_states, episode_rewards, episode_terminal)
