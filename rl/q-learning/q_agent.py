@@ -155,6 +155,8 @@ class QLearningAgent(object):
             # convert (r,c) action into index
             action_i = self.loc_to_ix(action)
 
+            print(state, action, action_i, reward)
+
             # get old q-value from q_lookup table
             if not (state_key in self.q_lookup.keys()):
                 # if never encountered state, initialize
@@ -178,6 +180,8 @@ class QLearningAgent(object):
 
             self.q_lookup[state_key][action_i] = new_q
 
+        print()
+        print("Q-table")
         for key in self.q_lookup:
             print(f"state: {key} | {self.q_lookup[key]}")
 
