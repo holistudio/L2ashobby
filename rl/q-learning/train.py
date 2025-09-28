@@ -2,13 +2,15 @@ from tictactoe import TicTacToe
 from random_agent import RandomAgent
 from q_agent import QLearningAgent
 
-EPISODES = 3
+import copy
+
+EPISODES = 1
 
 
 
 def main():
 
-    environment = TicTacToe()
+    environment = TicTacToe(display=True)
 
     # agent = RandomAgent()
     agent = QLearningAgent()
@@ -25,16 +27,19 @@ def main():
 
         while not terminal:
             # record state
-            episode_states.append(state)
+            episode_states.append(copy.deepcopy(state))
 
             # agent plays a piece
             action = agent.action(state)
             episode_actions.append(action)
+            print(action,rewards)
 
             # move environment a step
             state, terminal, rewards = environment.step(action)
             episode_rewards.append(rewards)
             episode_terminal.append(terminal)
+
+        print(action,rewards)
 
         # update agent experience
         agent.update_experience(episode_states, episode_actions, episode_rewards, episode_terminal)

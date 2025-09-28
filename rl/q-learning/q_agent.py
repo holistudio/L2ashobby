@@ -110,8 +110,11 @@ class QLearningAgent(object):
         return loc
     
     def update_experience(self, states, actions, rewards, terminals):
+        print()
+        print("# UPDATING EXPERIENCE #")
         for exp in zip(states, actions, rewards, terminals):
             state, action, reward, terminal = exp
+            print(state)
             self.experience.append({
                 "state": state,
                 "action": action,
@@ -129,6 +132,8 @@ class QLearningAgent(object):
         """
         update Q-lookup table based on experience in a single episode
         """
+        print()
+        print("## UPDATING POLICY ##")
         # loop through experience
         for i in range(len(self.experience)-1):
             # track the turn index and identify the appropriate player
@@ -145,6 +150,7 @@ class QLearningAgent(object):
 
             # convert state to lookup table key
             state_key = self.state_to_key(state)
+            print(state_key)
 
             # convert (r,c) action into index
             action_i = self.loc_to_ix(action)
@@ -172,6 +178,8 @@ class QLearningAgent(object):
 
             self.q_lookup[state_key][action_i] = new_q
 
+        for key in self.q_lookup:
+            print(f"state: {key} | {self.q_lookup[key]}")
 
         # after learning, clear experience
         self.experience = []
