@@ -31,9 +31,9 @@ class QLearningAgent(object):
         print('\n** LOADING MODEL **')
         with open('q_table.json',"r") as f:
             self.q_lookup = json.load(f)
-        print(len(list(self.q_lookup.keys())))
+        print(f"States observed: {len(list(self.q_lookup.keys()))}")
         pass
-    
+
     def save_model(self, track_ep=False, end_ep=1000):
         print('\n** SAVING MODEL **')
         with open('q_table.json',"w") as f:
