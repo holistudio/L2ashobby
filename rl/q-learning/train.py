@@ -16,6 +16,8 @@ def main():
     agent = QLearningAgent()
     # agent = QLearningAgent(alpha=1.0, gamma=1.0)
 
+    n_act = 0 # track total number of actions
+
     for e in range(EPISODES):
         episode_states = []
         episode_next_states = []
@@ -35,6 +37,7 @@ def main():
             action = agent.action(state)
             episode_actions.append(action)
             # print(action,rewards)
+            n_act += 1
 
             # move environment a step
             state, terminal, rewards = environment.step(action)
@@ -51,6 +54,7 @@ def main():
         agent.update_policy()
 
     environment.score_stats()
+    print(f"\nNumber of actions: {n_act}")
 
     agent.save_model()
 
