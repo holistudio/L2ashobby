@@ -2,4 +2,4 @@ fastai
 fastbook
 ipywidgets
 ipykernel
-
+tiktoken
