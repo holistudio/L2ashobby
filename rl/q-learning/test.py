@@ -12,9 +12,12 @@ def main():
 
     environment = TicTacToe()
 
-    # agent = RandomAgent()
-    agent = QLearningAgent(load=True)
-    # agent = QLearningAgent(alpha=1.0, gamma=1.0)
+    # agent1 = RandomAgent()
+    agent1 = QLearningAgent(load=True)
+
+    # agent2 = RandomAgent()
+    # agent2 = QLearningAgent(load=True)
+    agent2 = agent1
 
     for e in range(EPISODES):
         episode_states = []
@@ -31,8 +34,11 @@ def main():
             # record state
             episode_states.append(copy.deepcopy(state))
 
-            # agent plays a piece
-            action = agent.action(state)
+            # agent 1 or 2 plays a piece
+            if environment.turn % 2 == 0:
+                action = agent1.action(state)
+            else:
+                action = agent2.action(state)
             episode_actions.append(action)
             # print(action,rewards)
 
