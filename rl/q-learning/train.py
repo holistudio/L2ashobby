@@ -13,7 +13,7 @@ def main():
     environment = TicTacToe()
 
     # agent = RandomAgent()
-    agent = QLearningAgent()
+    agent = QLearningAgent(decay_rate=0.0002)
     # agent = QLearningAgent(alpha=1.0, gamma=1.0)
 
     n_act = 0 # track total number of actions
