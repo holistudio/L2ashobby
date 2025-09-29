@@ -1,5 +1,6 @@
 class TicTacToe(object):
-    def __init__(self, win_score=1, loss_score=-1, display=False):
+    def __init__(self, win_score=1, loss_score=-1, 
+                 display=False, score_file='win-loss-draw.csv'):
         # initial empty board
         self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
 
@@ -26,6 +27,11 @@ class TicTacToe(object):
         self.score_board = []
 
         self.display_board = display
+
+        self.score_file = score_file
+        with open(self.score_file,'w') as f:
+            f.write("P1,P1,P1,P2,P2,P2,\n")
+            f.write("W,L,D,W,L,D,\n")
 
     def display(self):
         """
@@ -206,25 +212,6 @@ class TicTacToe(object):
         self.score_board.append(self.scores)
         pass
 
-    def reset(self):
-        # initial empty board
-        self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
-
-        self.turn = 0 # turn index
-
-        # track if game is over or not
-        self.terminal = False
-
-        # player scores
-        self.scores = (None, None)
-
-        if self.display_board:
-            print()
-            print()
-            print("### NEW GAME ###")
-            self.display()
-        return self.state, self.terminal, self.scores
-    
     def score_stats(self, display=False):
         p1_stats=[0,0,0] # win-loss-draw
         p2_stats=[0,0,0]
@@ -250,3 +237,35 @@ class TicTacToe(object):
             print(f'Player 2 ({p2_win_rate:.2f}%): {p2_stats[0]} W - {p2_stats[1]} L - {p2_stats[2]} D ')
 
         return p1_stats, p2_stats
+    
+    def write_score_file(self):
+        p1_stats, p2_stats = self.score_stats()
+        row = p1_stats + p2_stats
+        row = [str(x) for x in row]
+        row = ",".join(row)
+        row += '\n'
+
+        with open(self.score_file,'a') as f:
+            f.write(row)
+
+    def reset(self, ep):
+        if ep != 0 and ep % 10 == 0:
+            self.write_score_file()
+
+        # initial empty board
+        self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
+
+        self.turn = 0 # turn index
+
+        # track if game is over or not
+        self.terminal = False
+
+        # player scores
+        self.scores = (None, None)
+
+        if self.display_board:
+            print()
+            print()
+            print("### NEW GAME ###")
+            self.display()
+        return self.state, self.terminal, self.scores
