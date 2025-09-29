@@ -1,6 +1,6 @@
 import random
 import math
-
+import json
 class QLearningAgent(object):
     def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01, alpha=0.1, gamma=0.8):
         self.q_lookup = {}
@@ -22,6 +22,12 @@ class QLearningAgent(object):
 
         self.alpha = alpha
         self.gamma = gamma
+        pass
+
+    def save_model(self, track_ep=False, end_ep=1000):
+        print('\n** SAVING MODEL **')
+        with open('q_table.json',"w") as f:
+            json.dump(self.q_lookup, f)
         pass
 
     def epsilon_decay(self):
