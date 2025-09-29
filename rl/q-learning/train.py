@@ -4,7 +4,7 @@ from q_agent import QLearningAgent
 
 import copy
 
-EPISODES = 1
+EPISODES = 1000
 
 
 
@@ -51,6 +51,8 @@ def main():
         agent.update_policy()
 
     environment.score_stats()
+
+    agent.save_model()
 
 if __name__ == "__main__":
     main()
