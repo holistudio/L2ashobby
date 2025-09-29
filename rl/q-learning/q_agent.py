@@ -24,6 +24,7 @@ class QLearningAgent(object):
         self.alpha = alpha
         self.gamma = gamma
 
+        self.model_file = model_file
         if load:
             self.load_model(model_file)
         pass
@@ -35,9 +36,9 @@ class QLearningAgent(object):
         print(f"States observed: {len(list(self.q_lookup.keys()))}")
         pass
 
-    def save_model(self, filename='q-table.json'):
+    def save_model(self):
         print('\n** SAVING MODEL **')
-        with open(filename,"w") as f:
+        with open(self.model_file,"w") as f:
             json.dump(self.q_lookup, f)
         pass
 
