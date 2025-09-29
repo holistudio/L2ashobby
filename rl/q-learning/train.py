@@ -18,14 +18,14 @@ def main():
 
     n_act = 0 # track total number of actions
 
-    for e in range(EPISODES):
+    for ep in range(EPISODES):
         episode_states = []
         episode_next_states = []
         episode_actions = []
         episode_rewards = []
         episode_terminal = []
 
-        state, terminal, rewards = environment.reset()
+        state, terminal, rewards = environment.reset(ep)
 
         terminal = False
 
