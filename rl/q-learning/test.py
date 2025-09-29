@@ -13,7 +13,7 @@ def main():
     environment = TicTacToe()
 
     # agent = RandomAgent()
-    agent = QLearningAgent()
+    agent = QLearningAgent(load=True)
     # agent = QLearningAgent(alpha=1.0, gamma=1.0)
 
     for e in range(EPISODES):
@@ -45,14 +45,14 @@ def main():
         # print(action,rewards)
 
         # update agent experience
-        agent.update_experience(episode_states, episode_actions, episode_next_states, episode_rewards, episode_terminal)
+        # agent.update_experience(episode_states, episode_actions, episode_next_states, episode_rewards, episode_terminal)
 
         # update agent policy
-        agent.update_policy()
+        # agent.update_policy()
 
     environment.score_stats()
 
-    agent.save_model()
+    # agent.save_model()
 
 if __name__ == "__main__":
     main()
