@@ -225,9 +225,7 @@ class TicTacToe(object):
             self.display()
         return self.state, self.terminal, self.scores
     
-    def score_stats(self):
-        print()
-        print("## SCORE BOARD ##")
+    def score_stats(self, display=False):
         p1_stats=[0,0,0] # win-loss-draw
         p2_stats=[0,0,0]
         for result in self.score_board:
@@ -245,7 +243,10 @@ class TicTacToe(object):
         p1_win_rate = p1_stats[0]* 100/sum(p1_stats) 
         p2_win_rate = p2_stats[0]* 100/sum(p2_stats)
 
-        print(f'Player 1 ({p1_win_rate:.2f}%): {p1_stats[0]} W - {p1_stats[1]} L - {p1_stats[2]} D ')
-        print(f'Player 2 ({p2_win_rate:.2f}%): {p2_stats[0]} W - {p2_stats[1]} L - {p2_stats[2]} D ')
+        if display:
+            print()
+            print("## SCORE BOARD ##")
+            print(f'Player 1 ({p1_win_rate:.2f}%): {p1_stats[0]} W - {p1_stats[1]} L - {p1_stats[2]} D ')
+            print(f'Player 2 ({p2_win_rate:.2f}%): {p2_stats[0]} W - {p2_stats[1]} L - {p2_stats[2]} D ')
 
-        pass
+        return p1_stats, p2_stats
