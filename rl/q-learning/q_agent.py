@@ -2,7 +2,7 @@ import random
 import math
 import json
 class QLearningAgent(object):
-    def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01, alpha=0.1, gamma=0.8):
+    def __init__(self, eps = 1.0, min_eps=0.1, max_eps=1.0, decay_rate=0.01, alpha=0.1, gamma=0.8, load=False):
         self.q_lookup = {}
         # snippet
         # q_lookup = {
@@ -22,8 +22,18 @@ class QLearningAgent(object):
 
         self.alpha = alpha
         self.gamma = gamma
+
+        if load:
+            self.load_model()
         pass
 
+    def load_model(self, track_ep=False, end_ep=1000):
+        print('\n** LOADING MODEL **')
+        with open('q_table.json',"r") as f:
+            self.q_lookup = json.load(f)
+        print(len(list(self.q_lookup.keys())))
+        pass
+    
     def save_model(self, track_ep=False, end_ep=1000):
         print('\n** SAVING MODEL **')
         with open('q_table.json',"w") as f:
