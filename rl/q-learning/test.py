@@ -19,14 +19,14 @@ def main():
     # agent2 = QLearningAgent(load=True)
     agent2 = agent1
 
-    for e in range(EPISODES):
+    for ep in range(EPISODES):
         episode_states = []
         episode_next_states = []
         episode_actions = []
         episode_rewards = []
         episode_terminal = []
 
-        state, terminal, rewards = environment.reset()
+        state, terminal, rewards = environment.reset(ep)
 
         terminal = False
 
@@ -56,7 +56,7 @@ def main():
         # update agent policy
         # agent.update_policy()
 
-    environment.score_stats()
+    environment.score_stats(display=True)
 
     # agent.save_model()
 
