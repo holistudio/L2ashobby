@@ -10,7 +10,7 @@ EPISODES = 1000
 
 def main():
 
-    environment = TicTacToe()
+    environment = TicTacToe(score_file='train_win-loss-draw.csv')
 
     # agent = RandomAgent()
     agent = QLearningAgent(decay_rate=0.0002)
@@ -53,7 +53,7 @@ def main():
         # update agent policy
         agent.update_policy()
 
-    environment.score_stats()
+    environment.score_stats(display=True)
     print(f"\nNumber of actions: {n_act}")
 
     agent.save_model()
