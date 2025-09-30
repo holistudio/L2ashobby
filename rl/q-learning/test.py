@@ -10,7 +10,7 @@ EPISODES = 1000
 
 def main():
 
-    environment = TicTacToe()
+    environment = TicTacToe(score_file='test_win-loss-draw.csv')
 
     # agent1 = RandomAgent()
     agent1 = QLearningAgent(load=True)
