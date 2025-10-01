@@ -30,8 +30,7 @@ class TicTacToe(object):
 
         self.score_file = score_file
         with open(self.score_file,'w') as f:
-            f.write("P1,P1,P1,P2,P2,P2,\n")
-            f.write("W,L,D,W,L,D,\n")
+            f.write("ep,P1-W,P1-L,P1-D,P2-W,P2-L,P2-D\n")
 
     def display(self):
         """
@@ -238,19 +237,20 @@ class TicTacToe(object):
 
         return p1_stats, p2_stats
     
-    def write_score_file(self):
+    def write_score_file(self, ep):
         p1_stats, p2_stats = self.score_stats()
         row = p1_stats + p2_stats
         row = [str(x) for x in row]
         row = ",".join(row)
         row += '\n'
+        row = str(ep) + ',' + row
 
         with open(self.score_file,'a') as f:
             f.write(row)
 
     def reset(self, ep):
         if ep != 0 and ep % 10 == 0:
-            self.write_score_file()
+            self.write_score_file(ep)
 
         # initial empty board
         self.state = [[" "," "," "],[" "," "," "],[" "," "," "]]
