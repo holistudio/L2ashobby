@@ -188,53 +188,7 @@ class QLearningAgent(object):
         """
         # print()
         # print("## UPDATING POLICY ##")
-        # loop through experience
-        # for i in range(len(self.experience)):
-        #     # track the turn index and identify the appropriate player
-        #     if i % 2 == 0:
-        #         pix = 0
-        #     else:
-        #         pix = 1
-
-        #     # get state action and reward for the appropriate player
-        #     state, action = self.experience[i]["state"], self.experience[i]["action"]
-        #     reward = self.experience[i]["rewards"][pix]
-        #     if reward == None:
-        #         reward = 0.0
-
-        #     # convert state to lookup table key
-        #     state_key = self.state_to_key(state)
-        #     # print(state_key)
-
-        #     # convert (r,c) action into index
-        #     action_i = self.loc_to_ix(action)
-
-        #     # print(state, action, action_i, reward)
-
-        #     # get old q-value from q_lookup table
-        #     if not (state_key in self.q_lookup.keys()):
-        #         # if never encountered state, initialize
-        #         self.q_lookup[state_key] = [0 for i in range(9)]
-
-        #     old_q = self.q_lookup[state_key][action_i]
-
-        #     # if it's not the end of the experience (guaranteed by ending at len(experience)-1))
-        #     # get the next state and next max q-value
-        #     next_state =  self.experience[i]["next_state"]
-        #     next_state_key = self.state_to_key(next_state)
-
-        #     if not (next_state_key in self.q_lookup.keys()):
-        #         # if never encountered state, initialize
-        #         self.q_lookup[next_state_key] = [0 for i in range(9)]
-            
-        #     next_max = max(self.q_lookup[next_state_key])
-
-        #     # update new value
-        #     new_q = (1 - self.alpha) * old_q + self.alpha * (reward + self.gamma * next_max)
-
-        #     self.q_lookup[state_key][action_i] = new_q
         
-        # print(self.experience[i]["next_state"])
         # print()
         # print("Q-table")
         # for key in self.q_lookup:
