@@ -25,16 +25,17 @@ class RandomAgent(object):
         loc = ix_to_loc(select_ix)
         return loc
     
-    def update_experience(self, states, actions, next_states, rewards, terminals):
-        for exp in zip(states, actions, next_states, rewards, terminals):
-            state, action, next_state, reward, terminal = exp
-            self.experience.append({
-                "state": state,
-                "action": action,
-                "next_state": next_state,
-                "rewards": reward,
-                "terminal": terminal
-            })
+    def update_experience(self, state, action, next_state, rewards, terminal):
+        # print()
+        # print("# UPDATING EXPERIENCE #")
+        # print(state, action, reward, terminal)
+        self.experience.append({
+            "state": state,
+            "action": action,
+            "next_state": next_state,
+            "rewards": rewards,
+            "terminal": terminal
+        })
         pass
 
     def update_policy(self):
