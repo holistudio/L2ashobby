@@ -127,20 +127,17 @@ class QLearningAgent(object):
         self.epsilon_decay()
         return loc
     
-    def update_experience(self, states, actions, next_states, rewards, terminals):
+    def update_experience(self, state, action, next_state, rewards, terminal):
         # print()
         # print("# UPDATING EXPERIENCE #")
-        # print(len(states), len(actions), len(next_states), len(rewards), len(terminals))
-        for exp in zip(states, actions, next_states, rewards, terminals):
-            state, action, next_state, reward, terminal = exp
-            # print(state, action, reward, terminal)
-            self.experience.append({
-                "state": state,
-                "action": action,
-                "next_state": next_state,
-                "rewards": reward,
-                "terminal": terminal
-            })
+        # print(state, action, reward, terminal)
+        self.experience.append({
+            "state": state,
+            "action": action,
+            "next_state": next_state,
+            "rewards": rewards,
+            "terminal": terminal
+        })
         pass
 
     def loc_to_ix(self, loc):
