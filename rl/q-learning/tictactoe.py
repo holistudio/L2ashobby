@@ -249,7 +249,7 @@ class TicTacToe(object):
             f.write(row)
 
     def reset(self, ep):
-        if ep != 0 and ep % 10 == 0:
+        if (ep+1) % 10 == 0:
             self.write_score_file(ep)
 
         # initial empty board
