@@ -19,36 +19,27 @@ def main():
     n_act = 0 # track total number of actions
 
     for ep in range(EPISODES):
-        episode_states = []
-        episode_next_states = []
-        episode_actions = []
-        episode_rewards = []
-        episode_terminal = []
 
         state, terminal, rewards = environment.reset(ep)
 
         terminal = False
 
         while not terminal:
-            # record state
-            episode_states.append(copy.deepcopy(state))
-
             # agent plays a piece
             action = agent.action(state)
-            episode_actions.append(action)
             # print(action,rewards)
             n_act += 1
 
             # move environment a step
-            state, terminal, rewards = environment.step(action)
-            episode_next_states.append(copy.deepcopy(state))
-            episode_rewards.append(rewards)
-            episode_terminal.append(terminal)
+            next_state, terminal, rewards = environment.step(action)
+
+            # update agent experience
+            agent.update_experience(copy.deepcopy(state), action, copy.deepcopy(next_state), rewards, terminal)
+
+            # update state
+            state = next_state
 
         # print(action,rewards)
-
-        # update agent experience
-        agent.update_experience(episode_states, episode_actions, episode_next_states, episode_rewards, episode_terminal)
 
         # update agent policy
         agent.update_policy()
