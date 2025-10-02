@@ -10,7 +10,7 @@ EPISODES = 1
 
 def main():
 
-    environment = TicTacToe(score_file='train_win-loss-draw.csv')
+    environment = TicTacToe(display=True)
 
     agent1 = RandomAgent()
     # agent1 = QLearningAgent(decay_rate=0.0002)
@@ -24,34 +24,56 @@ def main():
 
     for ep in range(EPISODES):
 
-        state, terminal, rewards = environment.reset(ep)
+        state1, terminal, rewards = environment.reset(ep)
 
         terminal = False
 
         while not terminal:
             # agent plays a piece
-            action = agent.action(state)
+            action1 = agent1.action(state1)
             # print(action,rewards)
             n_act += 1
 
             # move environment a step
-            next_state, terminal, rewards = environment.step(action)
+            next_state2, terminal, rewards = environment.step(action1)
 
-            # update agent experience
-            agent.update_experience(copy.deepcopy(state), action, copy.deepcopy(next_state), rewards, terminal)
+            if n_act > 1:
+                agent2.update_experience(copy.deepcopy(state2), action2, copy.deepcopy(next_state2), rewards, terminal)
+            
+            if not terminal:
+                state2 = next_state2
 
-            # update state
-            state = next_state
+                # agent plays a piece
+                action2 = agent2.action(state2)
+                # print(action,rewards)
+                n_act += 1
+
+                # move environment a step
+                next_state1, terminal, rewards = environment.step(action2)
+
+                # update agent experience
+                agent1.update_experience(copy.deepcopy(state1), action1, copy.deepcopy(next_state1), rewards, terminal)
+
+                # update state
+                state1 = next_state1
+
+            else:
+                # if the game is over after agent1's action
+                # agent2 still needs to record that as experience
+                agent2.update_experience(copy.deepcopy(state2), action2, copy.deepcopy(next_state2), rewards, terminal)
 
         # print(action,rewards)
 
         # update agent policy
-        agent.update_policy()
+        agent1.update_policy()
+        agent2.update_policy()
 
     environment.score_stats(display=True)
     print(f"\nNumber of actions: {n_act}")
 
-    agent.save_model()
+    agent1.save_model()
+    # TODO: see if all you need is agent1 save_model() to save a **complete** Q-table
+    # otherwise this needs two save_model() and a combine function something something
 
 if __name__ == "__main__":
     main()
