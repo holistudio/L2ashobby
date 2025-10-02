@@ -127,6 +127,11 @@ class QLearningAgent(object):
         self.epsilon_decay()
         return loc
     
+    def loc_to_ix(self, loc):
+        r,c = loc
+        ix = r*3 + c
+        return ix
+    
     def update_experience(self, state, action, next_state, rewards, terminal):
         # print()
         # print("# UPDATING EXPERIENCE #")
@@ -176,11 +181,6 @@ class QLearningAgent(object):
 
         self.q_lookup[state_key][action_i] = new_q
         pass
-
-    def loc_to_ix(self, loc):
-        r,c = loc
-        ix = r*3 + c
-        return ix
     
     def update_policy(self):
         """
@@ -188,7 +188,7 @@ class QLearningAgent(object):
         """
         # print()
         # print("## UPDATING POLICY ##")
-        
+
         # print()
         # print("Q-table")
         # for key in self.q_lookup:
