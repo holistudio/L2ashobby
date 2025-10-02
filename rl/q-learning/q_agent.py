@@ -138,6 +138,43 @@ class QLearningAgent(object):
             "rewards": rewards,
             "terminal": terminal
         })
+
+        # get state action and reward for the appropriate player
+        # TODO: revisit this because it doesn't know if it's player 1 or player 2 reward to use for update...
+        if (rewards[0] == 1) or (rewards[0] == -1):
+            reward = max(rewards)
+        else:
+            reward = 0
+
+        # convert state to lookup table key
+        state_key = self.state_to_key(state)
+        # print(state_key)
+
+        # convert (r,c) action into index
+        action_i = self.loc_to_ix(action)
+
+        # print(state, action, action_i, reward)
+
+        # get old q-value from q_lookup table
+        if not (state_key in self.q_lookup.keys()):
+            # if never encountered state, initialize
+            self.q_lookup[state_key] = [0 for i in range(9)]
+
+        old_q = self.q_lookup[state_key][action_i]
+
+        # get the next state and next max q-value
+        next_state_key = self.state_to_key(next_state)
+
+        if not (next_state_key in self.q_lookup.keys()):
+            # if never encountered state, initialize
+            self.q_lookup[next_state_key] = [0 for i in range(9)]
+        
+        next_max = max(self.q_lookup[next_state_key])
+
+        # update new value
+        new_q = (1 - self.alpha) * old_q + self.alpha * (reward + self.gamma * next_max)
+
+        self.q_lookup[state_key][action_i] = new_q
         pass
 
     def loc_to_ix(self, loc):
