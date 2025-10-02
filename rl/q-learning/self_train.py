@@ -4,7 +4,7 @@ from q_agent import QLearningAgent
 
 import copy
 
-EPISODES = 1000
+EPISODES = 1
 
 
 
@@ -12,9 +12,13 @@ def main():
 
     environment = TicTacToe(score_file='train_win-loss-draw.csv')
 
-    # agent = RandomAgent()
-    agent = QLearningAgent(decay_rate=0.0002)
-    # agent = QLearningAgent(alpha=1.0, gamma=1.0)
+    agent1 = RandomAgent()
+    # agent1 = QLearningAgent(decay_rate=0.0002)
+    # agent1 = QLearningAgent(alpha=1.0, gamma=1.0)
+
+    agent2 = RandomAgent()
+    # agent2 = QLearningAgent(decay_rate=0.0002)
+    # agent2 = QLearningAgent(alpha=1.0, gamma=1.0)
 
     n_act = 0 # track total number of actions
 
