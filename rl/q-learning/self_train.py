@@ -57,10 +57,11 @@ def main():
                 # update state
                 state1 = next_state1
 
-            else:
-                # if the game is over after agent1's action
-                # agent2 still needs to record that as experience
-                agent2.update_experience(copy.deepcopy(state2), action2, copy.deepcopy(next_state2), rewards, terminal)
+            # TODO: This may be a unneeded repeat of line 41 agent2.update_experience()
+            # else:
+            #     # if the game is over after agent1's action
+            #     # agent2 still needs to record that as experience
+            #     agent2.update_experience(copy.deepcopy(state2), action2, copy.deepcopy(next_state2), rewards, terminal)
 
         # print(action,rewards)
 
