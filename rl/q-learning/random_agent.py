@@ -44,6 +44,12 @@ class RandomAgent(object):
         self.experience = []
         pass
 
+    def save_model(self):
+        print('\n** SAVING MODEL **')
+        with open('joke.txt',"w") as f:
+            f.write('I KNOW NOTHING\nI NEVER LEARN\nI LEARN NOTHING\nI NEVER KNOW')
+        pass
+        
 def test():
     agent = RandomAgent()
 
