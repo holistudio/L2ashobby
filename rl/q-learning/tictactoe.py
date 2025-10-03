@@ -23,6 +23,8 @@ class TicTacToe(object):
             "p2_win": (loss_score,  win_score),
             "draw": (0, 0)
         }
+        self.win_score = win_score
+        self.loss_score = loss_score
         
         self.score_board = []
 
