@@ -10,7 +10,7 @@ EPISODES = 1
 
 def main():
 
-    environment = TicTacToe(display=True)
+    environment = TicTacToe()
 
     # agent1 = RandomAgent()
     agent1 = QLearningAgent(decay_rate=0.0002)
