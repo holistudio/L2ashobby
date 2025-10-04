@@ -15,9 +15,9 @@ def main():
     # agent1 = RandomAgent()
     agent1 = QLearningAgent(load=True)
 
-    # agent2 = RandomAgent()
+    agent2 = RandomAgent()
     # agent2 = QLearningAgent(load=True)
-    agent2 = agent1
+    # agent2 = agent1
 
     for ep in range(EPISODES):
         episode_states = []
