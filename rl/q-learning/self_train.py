@@ -2,15 +2,16 @@ from tictactoe import TicTacToe
 from random_agent import RandomAgent
 from q_agent import QLearningAgent
 
+import datetime
 import copy
 
-EPISODES = 1
+EPISODES = 100000
 
 
 
 def main():
 
-    environment = TicTacToe()
+    environment = TicTacToe(score_file='train_win-loss-draw.csv')
 
     # agent1 = RandomAgent()
     agent1 = QLearningAgent(decay_rate=0.0002)
@@ -23,6 +24,7 @@ def main():
 
     n_act = 0 # track total number of actions
 
+    start_time = datetime.datetime.now()
     for ep in range(EPISODES):
 
         state1, terminal, rewards = environment.reset(ep)
@@ -90,6 +92,8 @@ def main():
         # update agent policy
         agent1.update_policy()
         agent2.update_policy()
+        if (ep+1) % 10000 == 0:
+            print(ep+1, datetime.datetime.now()-start_time)
 
     environment.score_stats(display=True)
     print(f"\nNumber of actions: {n_act}")
