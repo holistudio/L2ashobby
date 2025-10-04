@@ -150,9 +150,9 @@ class QLearningAgent(object):
 
         # if the game is terminal
         if terminal:
-            print('# GAME OVER #')
-            print(state)
-            print(next_state)
+            # print('# GAME OVER #')
+            # print(state)
+            # print(next_state)
             state_num_filled = 9 - len(self.blank_locations(state))
             next_state_num_filled = 9 - len(self.blank_locations(next_state))
 
@@ -166,7 +166,7 @@ class QLearningAgent(object):
                     if next_state_num_filled % 2 != 0:
                         # then that means X-player won
                         reward = rewards[0]
-                        print(f'X-player won: {reward}')
+                        # print(f'X-player won: {reward}')
                 
                 # and state has odd number of filled spaces
                 else:
@@ -176,7 +176,7 @@ class QLearningAgent(object):
                     if next_state_num_filled % 2 == 0:
                         # then that means O-player won
                         reward = rewards[1]
-                        print(f'O-player won: {reward}')    
+                        # print(f'O-player won: {reward}')    
 
         # convert state to lookup table key
         state_key = self.state_to_key(state)
@@ -217,9 +217,9 @@ class QLearningAgent(object):
         # print("## UPDATING POLICY ##")
 
         # print()
-        print("Q-table")
-        for key in self.q_lookup:
-            print(f"state: {key} | {self.q_lookup[key]}")
+        # print("Q-table")
+        # for key in self.q_lookup:
+        #     print(f"state: {key} | {self.q_lookup[key]}")
 
         # after learning, clear experience
         self.experience = []
