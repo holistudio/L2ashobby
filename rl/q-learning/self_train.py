@@ -99,8 +99,6 @@ def main():
     print(f"\nNumber of actions: {n_act}")
 
     agent1.save_model()
-    # TODO: see if all you need is agent1 save_model() to save a **complete** Q-table
-    # otherwise this needs two save_model() and a combine function something something
-
+    
 if __name__ == "__main__":
     main()
