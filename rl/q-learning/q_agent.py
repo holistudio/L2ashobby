@@ -94,6 +94,10 @@ class QLearningAgent(object):
         # TODO: ensure that all 9 action keys are added to the lookup table for encountered state
         return ix
     
+    def blank_locations(self, state):
+        board_flat = [e for row in state for e in row]
+        # print(board_flat)
+        return [i for i,e in enumerate(board_flat) if e == " "]
 
     def action(self, state):
         def ix_to_loc(ix):
@@ -106,10 +110,7 @@ class QLearningAgent(object):
         state_key = self.state_to_key(state)
 
         # identify blank locations on the board
-        board_flat = [e for row in state for e in row]
-        # print(board_flat)
-        
-        blank_ixs = [i for i,e in enumerate(board_flat) if e == " "]
+        blank_ixs = self.blank_locations(state)
         # print(blank_ixs)
 
         if random.random() < self.epsilon:
@@ -145,11 +146,37 @@ class QLearningAgent(object):
         })
 
         # get state action and reward for the appropriate player
-        # TODO: revisit this because it doesn't know if it's player 1 or player 2 reward to use for update...
-        if (rewards[0] == 1) or (rewards[0] == -1):
-            reward = max(rewards)
-        else:
-            reward = 0
+        reward = 0  # default, assuming game is not over or draw
+
+        # if the game is terminal
+        if terminal:
+            print('# GAME OVER #')
+            print(state)
+            print(next_state)
+            state_num_filled = 9 - len(self.blank_locations(state))
+            next_state_num_filled = 9 - len(self.blank_locations(next_state))
+
+            # if it's not a draw
+            if rewards[0] != 0 and rewards[1] != 0:
+                # and state has even number of filled spaces
+                if state_num_filled % 2 == 0:
+                    # then it was X's turn during state
+
+                    # and if next_state has odd number of filled spaces
+                    if next_state_num_filled % 2 != 0:
+                        # then that means X-player won
+                        reward = rewards[0]
+                        print(f'X-player won: {reward}')
+                
+                # and state has odd number of filled spaces
+                else:
+                    # then it was O's turn during state
+
+                    # and if next_state has even number of filled spaces
+                    if next_state_num_filled % 2 == 0:
+                        # then that means O-player won
+                        reward = rewards[1]
+                        print(f'O-player won: {reward}')    
 
         # convert state to lookup table key
         state_key = self.state_to_key(state)
@@ -190,9 +217,9 @@ class QLearningAgent(object):
         # print("## UPDATING POLICY ##")
 
         # print()
-        # print("Q-table")
-        # for key in self.q_lookup:
-        #     print(f"state: {key} | {self.q_lookup[key]}")
+        print("Q-table")
+        for key in self.q_lookup:
+            print(f"state: {key} | {self.q_lookup[key]}")
 
         # after learning, clear experience
         self.experience = []
