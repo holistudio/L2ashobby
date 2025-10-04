@@ -38,15 +38,15 @@ def main():
 
             # move environment a step
             next_state2, terminal, rewards = environment.step(action1)
-            print(f'     state1: {state1}')
-            print(f'next_state2: {next_state2}')
-            print(f'  terminal1: {terminal}')
+            # print(f'     state1: {state1}')
+            # print(f'next_state2: {next_state2}')
+            # print(f'  terminal1: {terminal}')
 
             if n_act > 1:
                 # update agent experience
-                print(f'     agent2')
-                print(f'     state2: {state2}')
-                print(f'next_state2: {next_state2}')
+                # print(f'     agent2')
+                # print(f'     state2: {state2}')
+                # print(f'next_state2: {next_state2}')
                 agent2.update_experience(copy.deepcopy(state2), action2, copy.deepcopy(next_state2), rewards, terminal)
             
             if not terminal:
@@ -60,37 +60,35 @@ def main():
 
                 # move environment a step
                 next_state1, terminal, rewards = environment.step(action2)
-                print(f'     state2: {state2}')
-                print(f'next_state1: {next_state1}')
-                print(f'  terminal2: {terminal}')
+                # print(f'     state2: {state2}')
+                # print(f'next_state1: {next_state1}')
+                # print(f'  terminal2: {terminal}')
 
                 if not terminal:
                     # update agent experience
-                    print(f'     agent1')
-                    print(f'     state1: {state1}')
-                    print(f'next_state1: {next_state1}')
+                    # print(f'     agent1')
+                    # print(f'     state1: {state1}')
+                    # print(f'next_state1: {next_state1}')
                     agent1.update_experience(copy.deepcopy(state1), action1, copy.deepcopy(next_state1), rewards, terminal)
                     # update state
                     state1 = copy.deepcopy(next_state1)
                 else:
                     # if the game is over after agent2's action
                     # agent2 still needs to record that as experience
-                    print(f'     agent2')
-                    print(f'     state2: {state2}')
-                    print(f'next_state2: {next_state1}')
+                    # print(f'     agent2')
+                    # print(f'     state2: {state2}')
+                    # print(f'next_state2: {next_state1}')
                     agent2.update_experience(copy.deepcopy(state2), action2, copy.deepcopy(next_state1), rewards, terminal)
             else:
                 # if the game is over after agent1's action
                 # agent1 still needs to record that as experience
-                print(f'     agent1')
-                print(f'     state1: {state1}')
-                print(f'next_state2: {next_state2}')
+                # print(f'     agent1')
+                # print(f'     state1: {state1}')
+                # print(f'next_state2: {next_state2}')
                 agent1.update_experience(copy.deepcopy(state1), action1, copy.deepcopy(next_state2), rewards, terminal)
 
         # update agent policy
-        print('Player-X')
         agent1.update_policy()
-        print('\nPlayer-O')
         agent2.update_policy()
 
     environment.score_stats(display=True)
