@@ -42,12 +42,13 @@ class QLearningAgent:
         # Track learning progress
         self.training_error = []
 
-    def get_action(self, obs: tuple[int, int, bool]) -> int:
+    def get_action(self, obs: tuple[float, float, float, float]) -> int:
         """Choose an action using epsilon-greedy strategy.
 
         Returns:
-            action: 0 (stand) or 1 (hit)
+            action: 0 or 1
         """
+        obs = tuple(obs)
         # With probability epsilon: explore (random action)
         if np.random.random() < self.epsilon:
             return self.env.action_space.sample()
@@ -58,16 +59,19 @@ class QLearningAgent:
 
     def update(
         self,
-        obs: tuple[int, int, bool],
+        obs: tuple[float, float, float, float],
         action: int,
         reward: float,
         terminated: bool,
-        next_obs: tuple[int, int, bool],
+        next_obs: tuple[float, float, float, float],
     ):
         """Update Q-value based on experience.
 
         This is the heart of Q-learning: learn from (state, action, reward, next_state)
         """
+        obs = tuple(obs)
+        next_obs = tuple(next_obs)
+
         # What's the best we could do from the next state?
         # (Zero if episode terminated - no future rewards possible)
         future_q_value = (not terminated) * np.max(self.q_values[next_obs])
@@ -105,6 +109,12 @@ final_epsilon = 0.1         # Always keep some exploration
 # Create environment and agent
 env = gym.make("CartPole-v1")
 env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)
+
+print(env.observation_space)
+print(env.observation_space.shape)
+print(env.action_space)
+print(env.action_space.n)
+print(env.action_space.start)
 
 agent = QLearningAgent(
     env=env,
