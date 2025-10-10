@@ -2,6 +2,12 @@
 
 Link: https://gymnasium.farama.org/introduction/basic_usage/
 
+## Questions
+
+ - What are the four values in the observation space for CartPole?
+ - `OrderEnforcing`: ensures proper step order and resets...?
+ - `PassiveEnvChecker`: validates environment usage...?
+
 
 ## Your First RL Program
 
@@ -48,3 +54,27 @@ print(f"Observation space: {env.observation_space}")  # Box with 4 values
 # Box([-4.8, -inf, -0.418, -inf], [4.8, inf, 0.418, inf])
 print(f"Sample observation: {env.observation_space.sample()}")  # Random valid observation
 ```
+
+
+## Modifying the environment
+
+Gynasium games already have these Wrapper to allow you to modify environment behavior without touching the underlying code.
+
+ - `TimeLimit`: stops episode after a certain number of steps
+ - `OrderEnforcing`: ensures proper step order and resets...?
+ - `PassiveEnvChecker`: validates environment usage...?
+
+ New wrappers add functionality and can be chained to combine effects
+
+ ```
+# Wrap it to flatten the observation into a 1D array
+wrapped_env = FlattenObservation(env)
+```
+
+Additional Wrappers:
+
+ - `ClipAction`: Clips any action passed to step to ensure it’s within the valid action space.
+ - `RescaleAction`: Rescales actions to a different range (useful for algorithms that output actions in [-1, 1] but environment expects [0, 10]).
+
+Easily get back to completely unwrapped environment with `wrapped_env.unwrapped`
+
