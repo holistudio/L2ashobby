@@ -48,7 +48,7 @@ class QLearningAgent:
         Returns:
             action: 0 or 1
         """
-        
+
         # Convert numpy array to tuple
         obs = tuple(obs)
 
@@ -179,11 +179,9 @@ def test_agent(agent, env, num_episodes=1000):
     # Restore original epsilon
     agent.epsilon = old_epsilon
 
-    win_rate = np.mean(np.array(total_rewards) > 0)
     average_reward = np.mean(total_rewards)
 
     print(f"Test Results over {num_episodes} episodes:")
-    print(f"Win Rate: {win_rate:.1%}")
     print(f"Average Reward: {average_reward:.3f}")
     print(f"Standard Deviation: {np.std(total_rewards):.3f}")
 
