@@ -7,7 +7,9 @@ Link: https://gymnasium.farama.org/introduction/train_agent/
 
 ### Agent Never Improves
 
-Symptoms: Reward stays constant, large training errors Causes: Learning rate too high/low, poor reward design, bugs in update logic 
+Symptoms: Reward stays constant, large training errors 
+
+Causes: Learning rate too high/low, poor reward design, bugs in update logic 
 
 Solutions:
 
@@ -17,7 +19,9 @@ Solutions:
 
 ### Unstable Training
 
-Symptoms: Rewards fluctuate wildly, never converge Causes: Learning rate too high, insufficient exploration 
+Symptoms: Rewards fluctuate wildly, never converge 
+
+Causes: Learning rate too high, insufficient exploration 
 
 Solutions:
 
@@ -27,7 +31,9 @@ Solutions:
 
 ### Agent Gets Stuck in Poor Strategy
 
-Symptoms: Improvement stops early, suboptimal final performance Causes: Too little exploration, learning rate too low 
+Symptoms: Improvement stops early, suboptimal final performance 
+
+Causes: Too little exploration, learning rate too low 
 
 Solutions:
 
@@ -37,7 +43,9 @@ Solutions:
 
 ### Learning Too Slow
 
-Symptoms: Agent improves but very gradually Causes: Learning rate too low, too much exploration 
+Symptoms: Agent improves but very gradually 
+
+Causes: Learning rate too low, too much exploration 
 
 Solutions:
 
