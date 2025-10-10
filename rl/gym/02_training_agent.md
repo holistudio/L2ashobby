@@ -82,3 +82,23 @@ Store the current epsilon in case you want to train later: `old_epsilon = agent.
 Set `agent.epsilon = 0.0`
 
 At the end of testing set back/restore epsilon: `agent.epsilon = old_epsilon`
+
+## Switch to CartPole
+
+Change `env = gym.make("CartPole-v1")`
+
+Observation and action space have changed
+ - `env.observation_space` is `Box(low=[-4.8 -inf -0.41887903 -inf], high=[4.8 inf 0.41887903 inf], (4,), float32)`
+ - `env.observation_space.shape` is `(4,)`
+ - observation state is now a numpy array and can't be used as a dictionary key
+ - convert those to tuples via `obs = tuple(obs)`
+ - `env.action_space` is `Discrete(2)` with `env.action_space.start=0`
+     - meaning it's a set `{0,1}`
+     - same as BlackJackAgent example
+
+Code runs but issues remain
+
+ - Test Loop reports a "win-rate" which doesn't make sense for CartPole
+ - Reward seems to peak early and then keeps dropping till Average Reward = 10 and Average Episode Length = 10 
+    - Does that make sense for Q-Learning?
+    - Revisit the common problems and solutions above.
