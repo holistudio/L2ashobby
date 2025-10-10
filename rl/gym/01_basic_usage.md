@@ -78,3 +78,9 @@ Additional Wrappers:
 
 Easily get back to completely unwrapped environment with `wrapped_env.unwrapped`
 
+
+## Common Issues for Beginners
+
+Remember default code for agent is random (`action = env.action_space.sample()`) and therefore may not learn anything...
+
+If Episodes end immediately, that could be because `env.reset()` was not executed after an episode terminates or even executed after `gym.make()`
