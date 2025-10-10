@@ -6,7 +6,7 @@ Refer to the GitHub repo instead: https://github.com/Farama-Foundation/Gymnasium
 
 Default install: `pip install gymnasium`
 
-BUT there's probably more for RL training on specific games
+BUT there's probably more for RL training on specific games.
 
 Biggest install: `pip install "gymnasium[all]"`
 
