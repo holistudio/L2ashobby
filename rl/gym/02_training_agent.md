@@ -7,7 +7,9 @@ Link: https://gymnasium.farama.org/introduction/train_agent/
 
 ### Agent Never Improves
 
-Symptoms: Reward stays constant, large training errors Causes: Learning rate too high/low, poor reward design, bugs in update logic Solutions:
+Symptoms: Reward stays constant, large training errors Causes: Learning rate too high/low, poor reward design, bugs in update logic 
+
+Solutions:
 
  - Try learning rates between 0.001 and 0.1
  - Check that rewards are meaningful (-1, 0, +1 for Blackjack)
@@ -15,7 +17,9 @@ Symptoms: Reward stays constant, large training errors Causes: Learning rate too
 
 ### Unstable Training
 
-Symptoms: Rewards fluctuate wildly, never converge Causes: Learning rate too high, insufficient exploration Solutions:
+Symptoms: Rewards fluctuate wildly, never converge Causes: Learning rate too high, insufficient exploration 
+
+Solutions:
 
  - Reduce learning rate (try 0.01 instead of 0.1)
  - Ensure minimum exploration (final_epsilon ≥ 0.05)
@@ -23,7 +27,9 @@ Symptoms: Rewards fluctuate wildly, never converge Causes: Learning rate too hig
 
 ### Agent Gets Stuck in Poor Strategy
 
-Symptoms: Improvement stops early, suboptimal final performance Causes: Too little exploration, learning rate too low Solutions:
+Symptoms: Improvement stops early, suboptimal final performance Causes: Too little exploration, learning rate too low 
+
+Solutions:
 
  - Increase exploration time (slower epsilon decay)
  - Try higher learning rate initially
@@ -31,7 +37,9 @@ Symptoms: Improvement stops early, suboptimal final performance Causes: Too litt
 
 ### Learning Too Slow
 
-Symptoms: Agent improves but very gradually Causes: Learning rate too low, too much exploration Solutions:
+Symptoms: Agent improves but very gradually Causes: Learning rate too low, too much exploration 
+
+Solutions:
 
  - Increase learning rate (but watch for instability)
  - Faster epsilon decay (less random exploration)
