@@ -74,3 +74,11 @@ observation, reward, terminated, truncated, info = env.step(action)
 ## Training the Agent
 
 Note the wrapper: `env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)`
+
+## Testing Your Trained Agent
+
+Store the current epsilon in case you want to train later: `old_epsilon = agent.epsilon`
+
+Set `agent.epsilon = 0.0`
+
+At the end of testing set back/restore epsilon: `agent.epsilon = old_epsilon`
