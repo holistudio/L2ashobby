@@ -105,10 +105,18 @@ class QLearningAgent:
 """TRAINING LOOP"""
 
 # Training hyperparameters
-learning_rate = 0.01        # How fast to learn (higher = faster but less stable)
+
+# How fast to learn (higher = faster but less stable)
+learning_rate = 0.01        
+# learning_rate = 0.1        
+
 n_episodes = 100_000        # Number of hands to practice
 start_epsilon = 1.0         # Start with 100% random actions
-epsilon_decay = start_epsilon / (n_episodes / 2)  # Reduce exploration over time
+
+# Reduce exploration over time
+epsilon_decay = start_epsilon / (n_episodes / 2)  
+# epsilon_decay = start_epsilon / (1.5 * n_episodes)  
+
 final_epsilon = 0.1         # Always keep some exploration
 
 # Create environment and agent
