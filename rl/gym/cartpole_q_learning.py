@@ -5,7 +5,7 @@ import gymnasium as gym
 import numpy as np
 
 
-class BlackjackAgent:
+class QLearningAgent:
     def __init__(
         self,
         env: gym.Env,
@@ -106,7 +106,7 @@ final_epsilon = 0.1         # Always keep some exploration
 env = gym.make("Blackjack-v1", sab=False)
 env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)
 
-agent = BlackjackAgent(
+agent = QLearningAgent(
     env=env,
     learning_rate=learning_rate,
     initial_epsilon=start_epsilon,
