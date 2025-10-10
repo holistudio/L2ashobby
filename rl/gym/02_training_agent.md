@@ -1,5 +1,7 @@
 # Training an Agent
 
+Link: https://gymnasium.farama.org/introduction/train_agent/
+
 ## About the Environment: Blackjack
 
 **Clear rules**: Get closer to 21 than the dealer without going over
