@@ -103,7 +103,7 @@ epsilon_decay = start_epsilon / (n_episodes / 2)  # Reduce exploration over time
 final_epsilon = 0.1         # Always keep some exploration
 
 # Create environment and agent
-env = gym.make("Blackjack-v1", sab=False)
+env = gym.make("CartPole-v1")
 env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)
 
 agent = QLearningAgent(
