@@ -1,1 +1,2 @@
-gymnasium[all]
+gymnasium
+gymnasium[classic-control]
