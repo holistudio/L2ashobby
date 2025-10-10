@@ -48,7 +48,10 @@ class QLearningAgent:
         Returns:
             action: 0 or 1
         """
+        
+        # Convert numpy array to tuple
         obs = tuple(obs)
+
         # With probability epsilon: explore (random action)
         if np.random.random() < self.epsilon:
             return self.env.action_space.sample()
@@ -69,6 +72,8 @@ class QLearningAgent:
 
         This is the heart of Q-learning: learn from (state, action, reward, next_state)
         """
+
+        # Convert numpy array to tuple
         obs = tuple(obs)
         next_obs = tuple(next_obs)
 
@@ -110,11 +115,11 @@ final_epsilon = 0.1         # Always keep some exploration
 env = gym.make("CartPole-v1")
 env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)
 
-print(env.observation_space)
-print(env.observation_space.shape)
-print(env.action_space)
-print(env.action_space.n)
-print(env.action_space.start)
+# print(env.observation_space)
+# print(env.observation_space.shape)
+# print(env.action_space)
+# print(env.action_space.n)
+# print(env.action_space.start)
 
 agent = QLearningAgent(
     env=env,
