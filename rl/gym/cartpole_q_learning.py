@@ -104,6 +104,8 @@ class QLearningAgent:
 
 """TRAINING LOOP"""
 
+from tqdm import tqdm
+
 # Training hyperparameters
 
 # How fast to learn (higher = faster but less stable)
@@ -137,7 +139,7 @@ agent = QLearningAgent(
     final_epsilon=final_epsilon,
 )
 
-for episode in range(n_episodes):
+for episode in tqdm(range(n_episodes)):
     # Start a new hand
     obs, info = env.reset()
     done = False
