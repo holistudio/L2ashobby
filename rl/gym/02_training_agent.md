@@ -14,3 +14,15 @@
 **Rewards**: +1 for win, -1 for loss, 0 for draw
 
 **Episode terminates**: When agent stands or busts (goes over 21)
+
+
+## Executing an action
+
+```
+observation, reward, terminated, truncated, info = env.step(action)
+```
+
+`reward`: Immediate feedback for that action
+`truncated`: Whether the episode ended before it was supposed to (not for agent)
+`info`: Debugging info
+
