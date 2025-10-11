@@ -115,6 +115,14 @@ Observation and action space have changed
 Code runs but issues remain
 
  - Test Loop reports a "win-rate" which doesn't make sense for CartPole
+ - What does training error indicate here? Why the plateau?
  - Reward seems to peak early and then keeps dropping till Average Reward = 10 and Average Episode Length = 10 
     - Does that make sense for Q-Learning?
     - Revisit the common problems and solutions above.
+
+"Try higher learning rate initially"
+ - Doesn't seem to help, average reward still just keeps dropping
+
+"slower epsilon decay"
+ - That slows down the drop in average reward
+ - setting decay to 0 stops the reward from dropping but rewards don't increase either lol.
