@@ -122,9 +122,8 @@ epsilon_decay = 0
 
 final_epsilon = 0.1         # Always keep some exploration
 
-# Create environment and agent
-env = gym.make("CartPole-v1")
-env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)
+# Creat enviroment fir vuewing initial performance
+env = gym.make("CartPole-v1", render_mode="human")
 
 # print(env.observation_space)
 # print(env.observation_space.shape)
@@ -139,6 +138,33 @@ agent = QLearningAgent(
     epsilon_decay=epsilon_decay,
     final_epsilon=final_epsilon,
 )
+
+# Reset environment to start a new episode
+observation, info = env.reset()
+
+episode_over = False
+total_reward = 0
+
+while not episode_over:
+    # Choose an action: 0 = push cart left, 1 = push cart right
+    action = agent.get_action(observation)
+
+    # Take the action and see what happens
+    observation, reward, terminated, truncated, info = env.step(action)
+
+    # reward: +1 for each step the pole stays upright
+    # terminated: True if pole falls too far (agent failed)
+    # truncated: True if we hit the time limit (500 steps)
+
+    total_reward += reward
+    episode_over = terminated or truncated
+
+print(f"Episode finished! Total reward: {total_reward}")
+env.close()
+
+# Create environment and agent
+env = gym.make("CartPole-v1")
+env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)
 
 lr_not_changed = True
 
@@ -257,3 +283,29 @@ axs[2].set_xlabel("Step")
 
 plt.tight_layout()
 plt.show()
+
+# Create our training environment - a cart with a pole that needs balancing
+env = gym.make("CartPole-v1", render_mode="human")
+
+# Reset environment to start a new episode
+observation, info = env.reset()
+
+episode_over = False
+total_reward = 0
+
+while not episode_over:
+    # Choose an action: 0 = push cart left, 1 = push cart right
+    action = agent.get_action(observation)
+
+    # Take the action and see what happens
+    observation, reward, terminated, truncated, info = env.step(action)
+
+    # reward: +1 for each step the pole stays upright
+    # terminated: True if pole falls too far (agent failed)
+    # truncated: True if we hit the time limit (500 steps)
+
+    total_reward += reward
+    episode_over = terminated or truncated
+
+print(f"Episode finished! Total reward: {total_reward}")
+env.close()
