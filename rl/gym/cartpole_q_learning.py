@@ -110,14 +110,15 @@ from tqdm import tqdm
 
 # How fast to learn (higher = faster but less stable)
 learning_rate = 0.01        
-# learning_rate = 0.1        
+# learning_rate = 1e-6        
 
 n_episodes = 100_000        # Number of hands to practice
 start_epsilon = 1.0         # Start with 100% random actions
 
 # Reduce exploration over time
-epsilon_decay = start_epsilon / (n_episodes / 2)  
-# epsilon_decay = start_epsilon / (1.5 * n_episodes)  
+# epsilon_decay = start_epsilon / (n_episodes / 2)  
+# epsilon_decay = start_epsilon / (2 * n_episodes)  
+epsilon_decay = 0
 
 final_epsilon = 0.1         # Always keep some exploration
 
@@ -138,6 +139,8 @@ agent = QLearningAgent(
     epsilon_decay=epsilon_decay,
     final_epsilon=final_epsilon,
 )
+
+lr_not_changed = True
 
 for episode in tqdm(range(n_episodes)):
     # Start a new hand
@@ -161,6 +164,11 @@ for episode in tqdm(range(n_episodes)):
 
     # Reduce exploration rate (agent becomes less random over time)
     agent.decay_epsilon()
+
+    # Change to lower learning rate at the later episodes
+    if lr_not_changed and episode > n_episodes//2:
+        agent.lr = agent.lr / 10
+        lr_not_changed = False
 
 """TEST LOOP"""
 
