@@ -116,14 +116,14 @@ n_episodes = 100_000        # Number of hands to practice
 start_epsilon = 1.0         # Start with 100% random actions
 
 # Reduce exploration over time
-# epsilon_decay = start_epsilon / (n_episodes / 2)  
+epsilon_decay = start_epsilon / (n_episodes / 2)  
 # epsilon_decay = start_epsilon / (2 * n_episodes)  
-epsilon_decay = 0
+# epsilon_decay = 0
 
 final_epsilon = 0.1         # Always keep some exploration
 
-# Creat enviroment fir vuewing initial performance
-env = gym.make("CartPole-v1", render_mode="human")
+# Creat enviroment for viewing initial performance
+env = gym.make("CartPole-v1", render_mode="human", max_episode_steps=1000)
 
 # print(env.observation_space)
 # print(env.observation_space.shape)
@@ -159,7 +159,7 @@ while not episode_over:
     total_reward += reward
     episode_over = terminated or truncated
 
-print(f"Episode finished! Total reward: {total_reward}")
+print(f"\nBefore training total reward: {total_reward}\n")
 env.close()
 
 # Create environment and agent
@@ -285,7 +285,7 @@ plt.tight_layout()
 plt.show()
 
 # Create our training environment - a cart with a pole that needs balancing
-env = gym.make("CartPole-v1", render_mode="human")
+env = gym.make("CartPole-v1", render_mode="human", max_episode_steps=1000)
 
 # Reset environment to start a new episode
 observation, info = env.reset()
@@ -307,5 +307,5 @@ while not episode_over:
     total_reward += reward
     episode_over = terminated or truncated
 
-print(f"Episode finished! Total reward: {total_reward}")
+print(f"\nAfter training total reward: {total_reward}")
 env.close()
