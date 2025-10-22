@@ -22,7 +22,7 @@ setup(
         'joblib',
         # 'matplotlib==3.1.1',
         'matplotlib',
-        'mpi4py',
+        'mpi4py', # NOTE: for Windows+Intel, use `python -m pip install mpi4py impi-rt` to install separately
         'numpy',
         'pandas',
         'pytest',
