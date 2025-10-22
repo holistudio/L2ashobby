@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     ActorCritic = partial(exercise1_2_auxiliary.ExerciseActorCritic, actor=MLPGaussianActor)
     
-    ppo(env_fn = lambda : gym.make('InvertedPendulum-v2'),
+    ppo(env_fn = lambda : gym.make('InvertedPendulum-v5'),
         actor_critic=ActorCritic,
         ac_kwargs=dict(hidden_sizes=(64,)),
         steps_per_epoch=4000, epochs=20, logger_kwargs=dict(output_dir=logdir))
