@@ -33,17 +33,13 @@ def mlp(sizes, activation, output_activation=nn.Identity):
         (Use an nn.Sequential module.)
 
     """
-    # print(sizes)
-    obs_dim, act_dim, hidden_sizes = sizes
-    h = hidden_sizes[0] # TODO: see what the intention is for a multidimensional hidden_sizes tensor
-    return nn.Sequential(
-        nn.Linear(obs_dim, h),
-        activation(),
-        nn.Linear(h, h),
-        activation(),
-        nn.Linear(h, act_dim),
-        output_activation()
-    )
+    layers = []
+    for i in range(len(sizes)-2):
+        layers.append(nn.Linear(sizes[i], sizes[i+1]))
+        layers.append(activation())
+    layers.append(nn.Linear(sizes[-2],sizes[-1]))
+    layers.append(output_activation())
+    return nn.Sequential(*layers)
 
 class DiagonalGaussianDistribution:
 
@@ -57,9 +53,8 @@ class DiagonalGaussianDistribution:
             A PyTorch Tensor of samples from the diagonal Gaussian distribution with
             mean and log_std given by self.mu and self.log_std.
         """
-        action_dim = self.mu.shape[0]
         std = torch.exp(self.log_std)
-        samples = torch.randn((action_dim)) ** std + self.mu
+        samples = self.mu + torch.randn_like(std) * std  # keeps device + allows grad flow
         return samples
 
     #================================(Given, ignore)==========================================#
@@ -84,7 +79,7 @@ class MLPGaussianActor(nn.Module):
         (Make sure it's trainable!)
         """
         self.log_std = nn.Parameter(torch.ones(act_dim) * -0.5)
-        self.mu_net = mlp((obs_dim, act_dim, hidden_sizes), activation)
+        self.mu_net = mlp([obs_dim] + list(hidden_sizes) + [act_dim], activation)
         pass 
 
     #================================(Given, ignore)==========================================#
