@@ -33,14 +33,16 @@ def mlp(sizes, activation, output_activation=nn.Identity):
         (Use an nn.Sequential module.)
 
     """
+    # print(sizes)
     obs_dim, act_dim, hidden_sizes = sizes
+    h = hidden_sizes[0] # TODO: see what the intention is for a multidimensional hidden_sizes tensor
     return nn.Sequential(
-        nn.Linear(obs_dim,hidden_sizes),
-        activation,
-        nn.Linear(hidden_sizes, hidden_sizes),
-        activation,
-        nn.Linear(hidden_sizes, act_dim),
-        output_activation
+        nn.Linear(obs_dim, h),
+        activation(),
+        nn.Linear(h, h),
+        activation(),
+        nn.Linear(h, act_dim),
+        output_activation()
     )
 
 class DiagonalGaussianDistribution:
@@ -56,8 +58,8 @@ class DiagonalGaussianDistribution:
             mean and log_std given by self.mu and self.log_std.
         """
         action_dim = self.mu.shape[0]
-        std = torch.exp(self.log_std) # TODO: is this right??
-        samples = torch.randn(size=action_dim) ** std + self.mu
+        std = torch.exp(self.log_std)
+        samples = torch.randn((action_dim)) ** std + self.mu
         return samples
 
     #================================(Given, ignore)==========================================#
