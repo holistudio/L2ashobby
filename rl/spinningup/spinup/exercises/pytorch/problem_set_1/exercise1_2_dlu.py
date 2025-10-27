@@ -33,12 +33,15 @@ def mlp(sizes, activation, output_activation=nn.Identity):
         (Use an nn.Sequential module.)
 
     """
-    #######################
-    #                     #
-    #   YOUR CODE HERE    #
-    #                     #
-    #######################
-    pass
+    obs_dim, act_dim, hidden_sizes = sizes
+    return nn.Sequential(
+        nn.Linear(obs_dim,hidden_sizes),
+        activation,
+        nn.Linear(hidden_sizes, hidden_sizes),
+        activation,
+        nn.Linear(hidden_sizes, act_dim),
+        output_activation
+    )
 
 class DiagonalGaussianDistribution:
 
