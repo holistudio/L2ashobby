@@ -55,12 +55,10 @@ class DiagonalGaussianDistribution:
             A PyTorch Tensor of samples from the diagonal Gaussian distribution with
             mean and log_std given by self.mu and self.log_std.
         """
-        #######################
-        #                     #
-        #   YOUR CODE HERE    #
-        #                     #
-        #######################
-        pass
+        action_dim = self.mu.shape[0]
+        std = torch.exp(self.log_std) # TODO: is this right??
+        samples = torch.randn(size=action_dim) ** std + self.mu
+        return samples
 
     #================================(Given, ignore)==========================================#
     def log_prob(self, value):
@@ -83,13 +81,8 @@ class MLPGaussianActor(nn.Module):
         independent of observations, initialized to [-0.5, -0.5, ..., -0.5].
         (Make sure it's trainable!)
         """
-        #######################
-        #                     #
-        #   YOUR CODE HERE    #
-        #                     #
-        #######################
-        # self.log_std = 
-        # self.mu_net = 
+        self.log_std = nn.Parameter(torch.ones(act_dim) * -0.5)
+        self.mu_net = mlp((obs_dim, act_dim, hidden_sizes), activation)
         pass 
 
     #================================(Given, ignore)==========================================#
