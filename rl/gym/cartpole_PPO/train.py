@@ -72,5 +72,30 @@ def train(n_episodes=10, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=d
     
     # TODO: save agent 
 
+    return agent
+
 if __name__ == '__main__':
-    train()
+    agent = train()
+
+    # Creat enviroment for viewing initial performance
+    env = gym.make("CartPole-v1", render_mode="human", max_episode_steps=5000)
+
+    # Reset environment to start a new episode
+    (o, _), ep_ret, ep_len = env.reset(), 0, 0
+
+    episode_over = False
+    total_reward = 0
+
+    while not episode_over:
+        a, v, logp = agent.step(torch.as_tensor(o, dtype=torch.float32))
+
+        next_o, r, terminated, truncated , _ = env.step(a)
+
+        # reward: +1 for each step the pole stays upright
+        # terminated: True if pole falls too far (agent failed)
+        # truncated: True if we hit the time limit (500 steps)
+        total_reward += r
+        episode_over = terminated or truncated
+
+    print(f"\nAfter training total reward: {total_reward}\n")
+    env.close()
