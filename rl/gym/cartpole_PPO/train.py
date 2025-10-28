@@ -6,9 +6,13 @@ from tqdm import tqdm
 
 from agent import PPOAgent
 
+from utils.mpi_pytorch import setup_pytorch_for_mpi
 from utils.mpi_tools import proc_id, num_procs
 
 def train(n_episodes=10, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=dict()):
+    # Special function to avoid certain slowdowns from PyTorch + MPI combo.
+    setup_pytorch_for_mpi()
+
     # Random seed
     seed += 10000 * proc_id()
     torch.manual_seed(seed)
@@ -61,7 +65,7 @@ def train(n_episodes=10, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=d
 
                 (o, _), ep_ret, ep_len = env.reset(), 0, 0
         
-        # PPO agent update
+        # agent update
         agent.update()
     
     env.close()
