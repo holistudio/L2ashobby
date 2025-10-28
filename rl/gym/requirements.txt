@@ -1,5 +1,5 @@
 gymnasium
-gymnasium[atari,box2d,classic_control]
+gymnasium[atari,box2d,classic_control,other]
 numpy
 pandas
 
