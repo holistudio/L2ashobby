@@ -19,3 +19,13 @@ Install requirements
 ```
 pip3 install -r requirements.txt
 ```
+
+Install `mpi4py`:
+- If using Windows, use `python -m pip install mpi4py impi-rt`
+
+
+Install swig separately
+
+```
+pip install swig
+```
