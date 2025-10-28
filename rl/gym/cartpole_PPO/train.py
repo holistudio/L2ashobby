@@ -75,7 +75,7 @@ def train(n_episodes=10, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=d
     return agent
 
 if __name__ == '__main__':
-    agent = train()
+    agent = train(max_ep_len=5000)
 
     # Creat enviroment for viewing initial performance
     env = gym.make("CartPole-v1", render_mode="human", max_episode_steps=5000)
