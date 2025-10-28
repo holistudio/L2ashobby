@@ -2,6 +2,7 @@ import numpy as np
 import torch
 
 import gymnasium as gym
+from gymnasium.wrappers import RecordVideo
 from tqdm import tqdm
 
 from agent import PPOAgent
@@ -71,6 +72,7 @@ def train(n_episodes=10, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=d
     env.close()
     
     # TODO: save agent 
+    agent.save()
 
     return agent
 
@@ -78,7 +80,11 @@ if __name__ == '__main__':
     agent = train(max_ep_len=5000)
 
     # Creat enviroment for viewing initial performance
-    env = gym.make("CartPole-v1", render_mode="human", max_episode_steps=5000)
+    # env = gym.make("CartPole-v1", render_mode="human", max_episode_steps=5000)
+    env = gym.make("CartPole-v1", render_mode="rgb_array", max_episode_steps=5000)
+
+    # Record video only for the first episode (episode_trigger=lambda ep: ep == 0)
+    env = RecordVideo(env, video_folder="./videos", episode_trigger=lambda ep_num: ep_num == 0)
 
     # Reset environment to start a new episode
     (o, _), ep_ret, ep_len = env.reset(), 0, 0
