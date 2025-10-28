@@ -4,19 +4,20 @@ from torch.optim import Adam
 import gymnasium as gym
 import time
 
-from utils.mpi_pytorch import setup_pytorch_for_mpi, sync_params, mpi_avg_grads
-from utils.mpi_tools import mpi_fork, mpi_avg, proc_id, mpi_statistics_scalar, num_procs
+from agent import PPOAgent
+
+from utils.mpi_tools import num_procs
 
 def train(epochs=50, steps_per_epoch=4000, max_ep_len=1000):
     env = todo()
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape
 
-    agent = todo()
+    agent = PPOAgent(env.observation_space, env.action_space)
 
     # Set up experience buffer
     local_steps_per_epoch = int(steps_per_epoch / num_procs())
-    buf = agent.PPOBuffer(obs_dim, act_dim, local_steps_per_epoch, gamma, lam)
+    buf = agent.buffer
 
     # Main loop: collect experience in env and update/log each epoch
     for epoch in range(epochs):
