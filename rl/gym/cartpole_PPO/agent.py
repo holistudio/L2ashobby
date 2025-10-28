@@ -214,7 +214,7 @@ class PPOAgent(object):
     def __init__(self, observation_space, action_space, 
                  hidden_sizes=(64,64), activation=nn.Tanh,
                  local_steps_per_epoch=4000, gamma=0.99, lam=0.97,
-                 clip_ratio=0.2, train_pi_iters=80, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.01):
+                 clip_ratio=0.2, train_pi_iters=80, train_v_iters=80, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.01):
         
         obs_dim = observation_space.shape
         act_dim = action_space.shape
@@ -225,6 +225,7 @@ class PPOAgent(object):
 
         self.clip_ratio = clip_ratio
         self.train_pi_iters = train_pi_iters
+        self.train_v_iters = train_v_iters
 
         # Set up optimizers for policy and value function
         self.pi_optimizer = Adam(self.mlp_ac.pi.parameters(), lr=pi_lr)
@@ -276,7 +277,7 @@ class PPOAgent(object):
             loss_pi, pi_info = self.compute_loss_pi(data)
             kl = mpi_avg(pi_info['kl'])
             if kl > 1.5 * self.target_kl:
-                print('Early stopping at step %d due to reaching max kl.'%i)
+                # print('Early stopping at step %d due to reaching max kl.'%i)
                 break
             loss_pi.backward()
             mpi_avg_grads(self.mlp_ac.pi)    # average grads across MPI processes
