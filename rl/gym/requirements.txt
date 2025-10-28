@@ -1,4 +1,15 @@
 gymnasium
-gymnasium[classic-control]
+gymnasium[atari,box2d,classic_control]
+numpy
+pandas
+
 matplotlib
 tqdm
+scipy
+
+cloudpickle
+ipython
+joblib
+pytest
+psutil
+seaborn
