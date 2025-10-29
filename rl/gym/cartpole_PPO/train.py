@@ -10,7 +10,7 @@ from agent import PPOAgent
 from utils.mpi_pytorch import setup_pytorch_for_mpi
 from utils.mpi_tools import proc_id, num_procs
 
-def train(n_episodes=10, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=dict()):
+def train(n_episodes=100, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=dict()):
     # Special function to avoid certain slowdowns from PyTorch + MPI combo.
     setup_pytorch_for_mpi()
 
@@ -71,12 +71,48 @@ def train(n_episodes=10, steps_per_ep=4000, max_ep_len=1000, seed=0, ac_kwargs=d
     
     env.close()
     
-    # TODO: save agent 
+    # save agent and buffers (if any)
     agent.save()
 
     return agent
 
 if __name__ == '__main__':
+
+    # Creat enviroment for viewing initial performance
+    # env = gym.make("CartPole-v1", render_mode="human", max_episode_steps=5000)
+    env = gym.make("CartPole-v1", render_mode="rgb_array", max_episode_steps=5000)
+    agent = PPOAgent(env.observation_space, env.action_space)
+
+    # Record video only for the first episode (episode_trigger=lambda ep: ep == 0)
+    env = RecordVideo(env, video_folder="./videos", name_prefix='ppo_pre-train',episode_trigger=lambda ep_num: ep_num == 0)
+
+    # Reset environment to start a new episode
+    (o, _) = env.reset()
+
+    episode_over = False
+    total_reward = 0
+    episode_length = 0
+
+    while not episode_over:
+        a, v, logp = agent.step(torch.as_tensor(o, dtype=torch.float32))
+
+        next_o, r, terminated, truncated , _ = env.step(a)
+        episode_length += 1
+
+        # Update obs (critical!)
+        o = next_o
+
+        # reward: +1 for each step the pole stays upright
+        # terminated: True if pole falls too far (agent failed)
+        # truncated: True if we hit the time limit (500 steps)
+        total_reward += r
+        episode_over = terminated or truncated
+
+
+
+    print(f"\nBefore training total reward: {total_reward}\n")
+    env.close()
+    
     agent = train(max_ep_len=5000)
 
     # Creat enviroment for viewing initial performance
@@ -84,24 +120,31 @@ if __name__ == '__main__':
     env = gym.make("CartPole-v1", render_mode="rgb_array", max_episode_steps=5000)
 
     # Record video only for the first episode (episode_trigger=lambda ep: ep == 0)
-    env = RecordVideo(env, video_folder="./videos", episode_trigger=lambda ep_num: ep_num == 0)
+    env = RecordVideo(env, video_folder="./videos", name_prefix='ppo_post-train',episode_trigger=lambda ep_num: ep_num == 0)
 
     # Reset environment to start a new episode
-    (o, _), ep_ret, ep_len = env.reset(), 0, 0
+    (o, _) = env.reset()
 
     episode_over = False
     total_reward = 0
+    episode_length = 0
 
     while not episode_over:
         a, v, logp = agent.step(torch.as_tensor(o, dtype=torch.float32))
 
         next_o, r, terminated, truncated , _ = env.step(a)
+        episode_length += 1
+
+        # Update obs (critical!)
+        o = next_o
 
         # reward: +1 for each step the pole stays upright
         # terminated: True if pole falls too far (agent failed)
         # truncated: True if we hit the time limit (500 steps)
         total_reward += r
         episode_over = terminated or truncated
+
+
 
     print(f"\nAfter training total reward: {total_reward}\n")
     env.close()
