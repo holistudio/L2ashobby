@@ -118,6 +118,33 @@ class PPOBuffer:
                     adv=self.adv_buf, logp=self.logp_buf)
         return {k: torch.as_tensor(v, dtype=torch.float32) for k,v in data.items()}
     
+    def save(self, filename="ppo_buffer.npz"):
+        np.savez_compressed(
+            filename,
+            obs=self.obs_buf,
+            act=self.act_buf,
+            adv=self.adv_buf,
+            rew=self.rew_buf,
+            ret=self.ret_buf,
+            val=self.val_buf,
+            logp=self.logp_buf,
+            ptr=self.ptr,
+            path_start_idx=self.path_start_idx)
+        pass
+   
+    def load(self, filename="ppo_buffer.npz"):
+        data = np.load(filename)
+        self.obs_buf = data["obs"]
+        self.act_buf = data["act"]
+        self.adv_buf = data["adv"]
+        self.rew_buf = data["rew"]
+        self.ret_buf = data["ret"]
+        self.val_buf = data["val"]
+        self.logp_buf = data["logp"]
+        self.ptr = int(data["ptr"])
+        self.path_start_idx = int(data["path_start_idx"])
+        pass
+
 
 class Actor(nn.Module):
 
@@ -290,3 +317,11 @@ class PPOAgent(object):
             loss_v.backward()
             mpi_avg_grads(self.mlp_ac.v)    # average grads across MPI processes
             self.vf_optimizer.step()
+    
+    def save(self, module_filename='ppo_agent.pt.tar', buffer_filename="ppo_buffer.npz"):
+        self.buffer.save(buffer_filename)
+        torch.save(self.mlp_ac.state_dict(), module_filename)
+    
+    def load(self, module_filename='ppo_agent.pt.tar', buffer_filename="ppo_buffer.npz"):
+        self.buffer.load(buffer_filename)
+        self.mlp_ac.load_state_dict(torch.load(module_filename))
