@@ -30,12 +30,17 @@ class CartPoleEvaluator:
         print(self.agent.mlp_ac)
         return sum(p.numel() for p in self.agent.mlp_ac.parameters())
 
-    def evaluate(self, n_episodes: int = 10):
+    def evaluate(self, render_mode: str = 'human', n_episodes: int = 10):
         n_parameters = self.num_parameters()
         print(f"agent parameters: {n_parameters}")
         rewards: list[float] = []
         for i in range(n_episodes):
-            env = self.rendered_env
+            if render_mode == 'human':
+                env = self.rendered_env
+            elif render_mode == 'headless':
+                env = self.headless_env
+            else:
+                raise ValueError('Invalid render_mode')
             state, _ = env.reset()
             ended = False
             episode_reward = 0.0
@@ -52,8 +57,9 @@ class CartPoleEvaluator:
         r_mean_pp = r_mean / n_parameters
         r_std_pp = r_std / n_parameters
         print(f"Mean reward per parameter: {r_mean_pp} +/- {r_std_pp}")
+        env.close()
 
 
 if __name__ == "__main__":
     evaluator = CartPoleEvaluator()
-    evaluator.evaluate()
+    evaluator.evaluate('headless')
