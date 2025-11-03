@@ -5,7 +5,7 @@
 Conda environment:
 
 ```
-conda create --name learn-rl python=3.11
+conda create --name learn-rl python=3.12
 ```
 
 Install PyTorch 2.8.0 with CUDA 12.6
@@ -14,25 +14,11 @@ Install PyTorch 2.8.0 with CUDA 12.6
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
 ```
 
-```
-conda install -c conda-forge compilers
-```
-
-OR on Windows:
+Connect Four uses `pettingzoo[classic]` which contains some other games that require `open_spiel` (which is [complicated to install on Windows](https://github.com/google-deepmind/open_spiel/blob/master/docs/windows.md)). The easiest solution is to install `pettingzoo[classic]` without the `open_spiel` dependency
 
 ```
-conda install -c conda-forge m2w64-toolchain
+pip install pettingzoo[classic] --no-deps
 ```
-then
-
-```
-set CMAKE_GENERATOR=MinGW Makefiles
-set CMAKE_MAKE_PROGRAM=mingw32-make.exe
-set CXX=g++
-set CC=gcc
-```
-
-https://visualstudio.microsoft.com/downloads/?q=build+tools#build-tools-for-visual-studio-2022
 
 Install swig separately
 
