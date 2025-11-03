@@ -62,4 +62,4 @@ class CartPoleEvaluator:
 
 if __name__ == "__main__":
     evaluator = CartPoleEvaluator()
-    evaluator.evaluate('headless')
+    evaluator.evaluate('human')
