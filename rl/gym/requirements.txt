@@ -9,6 +9,8 @@ scipy
 
 cloudpickle
 ipython
+ipywidgets
+ipykernel
 joblib
 pytest
 psutil
