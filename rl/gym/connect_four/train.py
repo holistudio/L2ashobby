@@ -107,13 +107,6 @@ if __name__ == '__main__':
 
         if termination or truncation:
             action = None
-            if truncation:
-                mask = observation["action_mask"]
-                o = observation["observation"][:, :, idx]
-                o = torch.as_tensor(o, dtype=torch.float32).view(-1)
-                _, value, _ = agent.step(o, mask)
-            else:
-                value = 0
             env.reset()
             break
         else:
@@ -121,7 +114,7 @@ if __name__ == '__main__':
             o = observation["observation"][:, :, idx]
             o = torch.as_tensor(o, dtype=torch.float32).view(-1)
             # action = env.action_space(agent).sample(mask)  # this is where you would insert your policy
-            action, value, logp = agent.step(o, mask)
+            action = agent.act(o, mask)
             env.step(action)
     
     env.close()
