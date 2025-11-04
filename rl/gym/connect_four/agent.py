@@ -171,8 +171,12 @@ class MLPCategoricalActor(Actor):
         super().__init__()
         self.logits_net = mlp([obs_dim] + list(hidden_sizes) + [act_dim], activation)
 
-    def _distribution(self, obs):
+    def _distribution(self, obs, mask=None):
         logits = self.logits_net(obs)
+        if mask is not None:
+            mask = torch.as_tensor(mask, dtype=logits.dtype)
+            illegal = (mask == 0)
+            logits = logits.masked_fill(illegal, float('-inf'))
         return Categorical(logits=logits)
 
     def _log_prob_from_distribution(self, pi, act):
@@ -187,7 +191,7 @@ class MLPGaussianActor(Actor):
         self.log_std = torch.nn.Parameter(torch.as_tensor(log_std))
         self.mu_net = mlp([obs_dim] + list(hidden_sizes) + [act_dim], activation)
 
-    def _distribution(self, obs):
+    def _distribution(self, obs, mask=None):
         mu = self.mu_net(obs)
         std = torch.exp(self.log_std)
         return Normal(mu, std)
@@ -225,9 +229,9 @@ class MLPActorCritic(nn.Module):
         # build value function
         self.v  = MLPCritic(obs_dim, hidden_sizes, activation)
 
-    def step(self, obs):
+    def step(self, obs, mask=None):
         with torch.no_grad():
-            pi = self.pi._distribution(obs)
+            pi = self.pi._distribution(obs, mask)
             a = pi.sample()
             logp_a = self.pi._log_prob_from_distribution(pi, a)
             v = self.v(obs)
@@ -261,11 +265,12 @@ class PPOAgent(object):
         self.target_kl = target_kl
         pass
 
-    def step(self, obs):
-        return self.mlp_ac.step(obs)
+    def step(self, obs, mask=None):
+        return self.mlp_ac.step(obs, mask)
     
-    def act(self, obs):
-        return self.mlp_ac.act(obs)
+    # TODO: see if this is necessary/used
+    # def act(self, obs):
+    #     return self.mlp_ac.act(obs)
     
     # Set up function for computing PPO policy loss
     def compute_loss_pi(self, data):
