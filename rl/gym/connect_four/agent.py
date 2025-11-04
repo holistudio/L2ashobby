@@ -237,8 +237,8 @@ class MLPActorCritic(nn.Module):
             v = self.v(obs)
         return a.numpy(), v.numpy(), logp_a.numpy()
 
-    def act(self, obs):
-        return self.step(obs)[0]
+    def act(self, obs, mask=None):
+        return self.step(obs, mask)[0]
     
 
 class PPOAgent(object):
@@ -268,9 +268,8 @@ class PPOAgent(object):
     def step(self, obs, mask=None):
         return self.mlp_ac.step(obs, mask)
     
-    # TODO: see if this is necessary/used
-    # def act(self, obs):
-    #     return self.mlp_ac.act(obs)
+    def act(self, obs, mask=None):
+        return self.mlp_ac.act(obs, mask)
     
     # Set up function for computing PPO policy loss
     def compute_loss_pi(self, data):
