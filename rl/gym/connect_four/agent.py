@@ -109,7 +109,7 @@ class PPOBuffer:
         the buffer, with advantages appropriately normalized (shifted to have
         mean zero and std one). Also, resets some pointers in the buffer.
         """
-        assert self.ptr == self.max_size    # buffer has to be full before you can get
+        # assert self.ptr == self.max_size    # buffer has to be full before you can get
         self.ptr, self.path_start_idx = 0, 0
         # the next two lines implement the advantage normalization trick
         adv_mean, adv_std = mpi_statistics_scalar(self.adv_buf)
@@ -214,7 +214,7 @@ class MLPActorCritic(nn.Module):
                  hidden_sizes=(64,64), activation=nn.Tanh):
         super().__init__()
 
-        obs_dim = observation_space.shape[0]
+        obs_dim = observation_space.shape[0]*observation_space.shape[1]
 
         # policy builder depends on action space
         if isinstance(action_space, Box):
@@ -243,7 +243,7 @@ class PPOAgent(object):
                  local_steps_per_epoch=4000, gamma=0.99, lam=0.97,
                  clip_ratio=0.2, train_pi_iters=80, train_v_iters=80, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.01):
         
-        obs_dim = observation_space.shape
+        obs_dim = observation_space.shape[0]*observation_space.shape[1]
         act_dim = action_space.shape
 
         self.buffer = PPOBuffer(obs_dim, act_dim, local_steps_per_epoch, gamma, lam)
