@@ -39,10 +39,6 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
     for episode in tqdm(range(n_episodes)):
         env.reset(seed=42)
         for a in env.agent_iter():
-
-            idx += 1
-            if idx >= len(agent_list):
-                idx = 0
             agent = agent_list[idx]
             buf = buf_list[idx]
 
@@ -56,9 +52,12 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
             else:
                 mask = None
 
-            o = observation["observation"][:, :, idx]
-            o = torch.as_tensor(o, dtype=torch.float32).view(-1)
-
+            # blank spaces are 0, +1 represents current player's tokens, -1 represent's opponent player's tokens
+            # environment alternates the observation planes for you
+            o1 = observation["observation"][:, :, 0]
+            o2 = observation["observation"][:, :, 1]
+            o = torch.as_tensor(o1-o2, dtype=torch.float32).view(-1) # assumes players pieces do not overlap on the board (true for connect four)
+            
             if termination or truncation:
                 action = None
                 if truncation:
@@ -74,6 +73,9 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
 
             env.step(action)
             moves[episode] += 1
+            idx += 1
+            if idx >= len(agent_list):
+                idx = 0
             
         
         idx = 0
@@ -101,9 +103,6 @@ if __name__ == '__main__':
 
     
     for a in env.agent_iter():
-        idx += 1
-        if idx >= len(agent_list):
-            idx = 0
         agent = agent_list[idx]
 
         observation, reward, termination, truncation, info = env.last()
@@ -116,8 +115,11 @@ if __name__ == '__main__':
         else:
             mask = None
         
-        o = observation["observation"][:, :, idx]
-        o = torch.as_tensor(o, dtype=torch.float32).view(-1)
+        # blank spaces are 0, +1 represents current player's tokens, -1 represent's opponent player's tokens
+        # environment alternates the observation planes for you
+        o1 = observation["observation"][:, :, 0]
+        o2 = observation["observation"][:, :, 1]
+        o = torch.as_tensor(o1-o2, dtype=torch.float32).view(-1) # assumes players pieces do not overlap on the board (true for connect four)
 
         if termination or truncation:
             action = None
@@ -126,5 +128,8 @@ if __name__ == '__main__':
         else:
             action = agent.act(o, mask)
             env.step(action)
+            idx += 1
+            if idx >= len(agent_list):
+                idx = 0
     
     env.close()
