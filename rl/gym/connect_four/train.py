@@ -10,7 +10,7 @@ from agent import PPOAgent
 from utils.mpi_pytorch import setup_pytorch_for_mpi
 from utils.mpi_tools import proc_id, num_procs
 
-def train(n_episodes=100, seed=0, ac_kwargs=dict()):
+def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
 
     # Special function to avoid certain slowdowns from PyTorch + MPI combo.
     setup_pytorch_for_mpi()
@@ -24,9 +24,8 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
     env = connect_four_v3.env()
     # env = go_v5.env(board_size = 19, komi = 7.5, render_mode="human")
 
-    local_steps = 100
-    agent1 = PPOAgent(env.observation_spaces['player_0']['observation'], env.action_spaces['player_0'], local_steps_per_epoch=local_steps, **ac_kwargs)
-    agent2 = PPOAgent(env.observation_spaces['player_1']['observation'], env.action_spaces['player_1'], local_steps_per_epoch=local_steps, **ac_kwargs)
+    agent1 = PPOAgent(env.observation_spaces['player_0']['observation'], env.action_spaces['player_0'], local_steps_per_epoch=buffer_size, **ac_kwargs)
+    agent2 = PPOAgent(env.observation_spaces['player_1']['observation'], env.action_spaces['player_1'], local_steps_per_epoch=buffer_size, **ac_kwargs)
 
     # Set up experience buffer
     buf1 = agent1.buffer
@@ -85,12 +84,11 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
         
         idx = 0
         # agent update only after the buffer is full
-        if steps[0] > local_steps:
+        if steps[0] >= buffer_size:
+            # print(f"Ep {episode}, agent 1 updating!")
             agent1.update()
-            steps[0] = 0
-        if steps[1] > local_steps:
+        if steps[1] >= buffer_size:
             agent2.update()
-            steps[1] = 0
 
     env.close()
     print(f"Average number of moves = {moves.mean()}")
@@ -101,7 +99,7 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
     return agent1, agent2
 
 if __name__ == '__main__':
-    agent1, agent2 = train(n_episodes=10)
+    agent1, agent2 = train(n_episodes=200, buffer_size=100)
 
     env = connect_four_v3.env(render_mode="human")
 
