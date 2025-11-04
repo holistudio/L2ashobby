@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from tqdm import tqdm
+import imageio
 
 from pettingzoo.classic import connect_four_v3
 # from pettingzoo.classic import go_v5
@@ -118,10 +119,11 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
     return agent1, agent2
 
 if __name__ == '__main__':
-    agent1, agent2 = train(n_episodes=10, buffer_size=100)
+    agent1, agent2 = train(n_episodes=500, buffer_size=1000)
 
     # env = connect_four_v3.env(render_mode="human")
     env = connect_four_v3.env(render_mode="rgb_array")
+    frames = []  # store frames here
 
     env.reset(seed=42)
 
@@ -133,6 +135,10 @@ if __name__ == '__main__':
         agent = agent_list[idx]
 
         observation, reward, termination, truncation, info = env.last()
+        # Get the current frame
+        frame = env.render()
+        if frame is not None:
+            frames.append(frame)
 
         # invalid action masking is optional and environment-dependent
         if "action_mask" in info:
@@ -160,3 +166,7 @@ if __name__ == '__main__':
                 idx = 0
     
     env.close()
+    
+    # Save video to file
+    output_path = "game_post_train.mp4"
+    imageio.mimsave(output_path, frames, fps=1)  # adjust FPS as desired
