@@ -24,8 +24,9 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
     env = connect_four_v3.env()
     # env = go_v5.env(board_size = 19, komi = 7.5, render_mode="human")
 
-    agent1 = PPOAgent(env.observation_spaces['player_0']['observation'], env.action_spaces['player_0'], local_steps_per_epoch=42, **ac_kwargs)
-    agent2 = PPOAgent(env.observation_spaces['player_1']['observation'], env.action_spaces['player_1'], local_steps_per_epoch=42, **ac_kwargs)
+    local_steps = 100
+    agent1 = PPOAgent(env.observation_spaces['player_0']['observation'], env.action_spaces['player_0'], local_steps_per_epoch=local_steps, **ac_kwargs)
+    agent2 = PPOAgent(env.observation_spaces['player_1']['observation'], env.action_spaces['player_1'], local_steps_per_epoch=local_steps, **ac_kwargs)
 
     # Set up experience buffer
     buf1 = agent1.buffer
@@ -33,9 +34,11 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
 
     agent_list = [agent1, agent2]
     buf_list = [buf1, buf2]
+    steps = [0, 0] # track steps for each agent's buffer
     idx = 0
 
     moves = np.zeros(n_episodes)
+    
     for episode in tqdm(range(n_episodes)):
         env.reset(seed=42)
         for a in env.agent_iter():
@@ -70,18 +73,24 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
                 action, value, logp = agent.step(o, mask)
                 
                 buf.store(o.numpy(), action, reward, value, logp)
+                steps[idx] += 1
 
             env.step(action)
             moves[episode] += 1
+            
             idx += 1
             if idx >= len(agent_list):
                 idx = 0
             
         
         idx = 0
-        # agent update
-        agent1.update()
-        agent2.update()
+        # agent update only after the buffer is full
+        if steps[0] > local_steps:
+            agent1.update()
+            steps[0] = 0
+        if steps[1] > local_steps:
+            agent2.update()
+            steps[1] = 0
 
     env.close()
     print(f"Average number of moves = {moves.mean()}")
