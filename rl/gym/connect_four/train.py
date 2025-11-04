@@ -51,23 +51,23 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
             if termination or truncation:
                 action = None
                 if truncation:
-                    # mask = observation["action_mask"][:, :, idx]
-                    mask = observation["observation"][:, :, idx]
-                    mask = torch.as_tensor(mask, dtype=torch.float32).view(-1)
-                    _, value, _ = agent.step(mask)
+                    mask = observation["action_mask"]
+                    o = observation["observation"][:, :, idx]
+                    o = torch.as_tensor(o, dtype=torch.float32).view(-1)
+                    _, value, _ = agent.step(o, mask)
                 else:
                     value = 0
 
                 buf.finish_path(value)
                 
             else:
-                # mask = observation["action_mask"][:, :, idx]
-                mask = observation["observation"][:, :, idx]
-                mask = torch.as_tensor(mask, dtype=torch.float32).view(-1)
+                mask = observation["action_mask"]
+                o = observation["observation"][:, :, idx]
+                o = torch.as_tensor(o, dtype=torch.float32).view(-1)
                 # action = env.action_space(agent).sample(mask)  # this is where you would insert your policy
-                action, value, logp = agent.step(mask)
+                action, value, logp = agent.step(o, mask)
                 
-                buf.store(mask.numpy(), action, reward, value, logp)
+                buf.store(o.numpy(), action, reward, value, logp)
 
             env.step(action)
             moves[episode] += 1
@@ -87,7 +87,7 @@ def train(n_episodes=100, seed=0, ac_kwargs=dict()):
     return agent1, agent2
 
 if __name__ == '__main__':
-    agent1, agent2 = train(n_episodes=100)
+    agent1, agent2 = train(n_episodes=10)
 
     env = connect_four_v3.env(render_mode="human")
 
@@ -108,16 +108,20 @@ if __name__ == '__main__':
         if termination or truncation:
             action = None
             if truncation:
-                # mask = observation["action_mask"]
-                mask = observation["observation"][:, :, idx]
-                mask = torch.as_tensor(mask, dtype=torch.float32).view(-1)
-                _, value, _ = agent.step(mask)
+                mask = observation["action_mask"]
+                o = observation["observation"][:, :, idx]
+                o = torch.as_tensor(o, dtype=torch.float32).view(-1)
+                _, value, _ = agent.step(o, mask)
             else:
                 value = 0
+            env.reset()
+            break
         else:
-            # mask = observation["action_mask"]
-            mask = observation["observation"][:, :, idx]
-            mask = torch.as_tensor(mask, dtype=torch.float32).view(-1)
+            mask = observation["action_mask"]
+            o = observation["observation"][:, :, idx]
+            o = torch.as_tensor(o, dtype=torch.float32).view(-1)
             # action = env.action_space(agent).sample(mask)  # this is where you would insert your policy
-            action, value, logp = agent.step(mask)
+            action, value, logp = agent.step(o, mask)
             env.step(action)
+    
+    env.close()
