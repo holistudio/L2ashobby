@@ -34,11 +34,17 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
     agent_list = [agent1, agent2]
     buf_list = [buf1, buf2]
     steps = [0, 0] # track steps for each agent's buffer
+    win_loss_draw = {
+        "player_0": [0,0,0],
+        "player_1": [0,0,0]
+    }
     idx = 0
 
     moves = np.zeros(n_episodes)
     
     for episode in tqdm(range(n_episodes)):
+        # print()
+        # print(episode)
         env.reset(seed=42)
         for a in env.agent_iter():
             agent = agent_list[idx]
@@ -61,12 +67,20 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
             o = torch.as_tensor(o1-o2, dtype=torch.float32).view(-1) # assumes players pieces do not overlap on the board (true for connect four)
             
             if termination or truncation:
+                # print(a)
+                # print(reward)
                 action = None
                 if truncation:
                     _, value, _ = agent.step(o, mask)
+                    win_loss_draw[a][2] += 1 
                 else:
                     value = 0
-
+                    if reward > 0:
+                        win_loss_draw[a][0] += 1 
+                    elif reward < 0:
+                        win_loss_draw[a][1] += 1 
+                    else:
+                        win_loss_draw[a][2] += 1 
                 buf.finish_path(value)
             else:
                 action, value, logp = agent.step(o, mask)
@@ -80,8 +94,12 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
             idx += 1
             if idx >= len(agent_list):
                 idx = 0
-            
-        
+        if (episode+1) % 10 == 0:
+            print()
+            print(f'EP {episode}')
+            print(win_loss_draw)
+            print(f"P1 Win Rate = {win_loss_draw['player_0'][0]*100/sum(win_loss_draw['player_0']):.2f}")
+            print(f"P2 Win Rate = {win_loss_draw['player_1'][0]*100/sum(win_loss_draw['player_1']):.2f}")
         idx = 0
         # agent update only after the buffer is full
         if steps[0] >= buffer_size:
@@ -92,6 +110,7 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
 
     env.close()
     print(f"Average number of moves = {moves.mean()}")
+    print(win_loss_draw)
 
     agent1.save(module_filename='Conn4-P1_agent.pt.tar', buffer_filename="Conn4-P1_buffer.npz")
     agent2.save(module_filename='Conn4-P2_agent.pt.tar', buffer_filename="Conn4-P2_buffer.npz")
@@ -99,9 +118,10 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
     return agent1, agent2
 
 if __name__ == '__main__':
-    agent1, agent2 = train(n_episodes=200, buffer_size=100)
+    agent1, agent2 = train(n_episodes=10, buffer_size=100)
 
-    env = connect_four_v3.env(render_mode="human")
+    # env = connect_four_v3.env(render_mode="human")
+    env = connect_four_v3.env(render_mode="rgb_array")
 
     env.reset(seed=42)
 
