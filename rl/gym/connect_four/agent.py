@@ -218,7 +218,12 @@ class MLPActorCritic(nn.Module):
                  hidden_sizes=(64,64), activation=nn.Tanh):
         super().__init__()
 
-        obs_dim = observation_space.shape[0]*observation_space.shape[1]
+        if len(observation_space.shape) > 1:
+            obs_dim = observation_space.shape[0]*observation_space.shape[1]
+        elif len(observation_space.shape) == 1:
+            obs_dim = observation_space.shape[0]
+        else:
+            raise ValueError('Unexpected observation space shape')
 
         # policy builder depends on action space
         if isinstance(action_space, Box):
@@ -247,7 +252,13 @@ class PPOAgent(object):
                  local_steps_per_epoch=4000, gamma=0.99, lam=0.97,
                  clip_ratio=0.2, train_pi_iters=80, train_v_iters=80, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.01):
         
-        obs_dim = observation_space.shape[0]*observation_space.shape[1]
+        if len(observation_space.shape) > 1:
+            obs_dim = observation_space.shape[0]*observation_space.shape[1]
+        elif len(observation_space.shape) == 1:
+            obs_dim = observation_space.shape[0]
+        else:
+            raise ValueError('Unexpected observation space shape')
+
         act_dim = action_space.shape
 
         self.buffer = PPOBuffer(obs_dim, act_dim, local_steps_per_epoch, gamma, lam)
