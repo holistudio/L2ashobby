@@ -2,6 +2,8 @@
 *.pt
 *.npz
 *.csv
+rl/q-learning/joke.txt
+rl/q-learning/q-table.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
