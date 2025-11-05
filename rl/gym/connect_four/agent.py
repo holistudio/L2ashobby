@@ -282,10 +282,16 @@ class PPOAgent(object):
         pass
 
     def step(self, obs, mask=None):
-        return self.mlp_ac.step(obs, mask)
+        o1 = obs["observation"][:, :, 0]
+        o2 = obs["observation"][:, :, 1]
+        o = torch.as_tensor(o1-o2, dtype=torch.float32).view(-1)
+        return self.mlp_ac.step(o, mask)
     
     def act(self, obs, mask=None):
-        return self.mlp_ac.act(obs, mask)
+        o1 = obs["observation"][:, :, 0]
+        o2 = obs["observation"][:, :, 1]
+        o = torch.as_tensor(o1-o2, dtype=torch.float32).view(-1)
+        return self.mlp_ac.act(o, mask)
     
     # Set up function for computing PPO policy loss
     def compute_loss_pi(self, data):
