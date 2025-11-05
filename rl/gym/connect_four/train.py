@@ -95,16 +95,18 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
             idx += 1
             if idx >= len(agent_list):
                 idx = 0
-        if (episode+1) % 10 == 0:
-            print()
-            print(f'EP {episode}')
-            print(win_loss_draw)
-            print(f"P1 Win Rate = {win_loss_draw['player_0'][0]*100/sum(win_loss_draw['player_0']):.2f}")
-            print(f"P2 Win Rate = {win_loss_draw['player_1'][0]*100/sum(win_loss_draw['player_1']):.2f}")
+        # if (episode+1) % 50 == 0:
+        #     print()
+        #     print(f'EP {episode}')
+        #     print(win_loss_draw)
+        #     print(f"P1 Win Rate = {win_loss_draw['player_0'][0]*100/sum(win_loss_draw['player_0']):.2f}")
+        #     print(f"P2 Win Rate = {win_loss_draw['player_1'][0]*100/sum(win_loss_draw['player_1']):.2f}")
         idx = 0
         # agent update only after the buffer is full
         if steps[0] >= buffer_size:
             # print(f"Ep {episode}, agent 1 updating!")
+            # print(agent1.buffer.ptr)
+            # print(steps)
             agent1.update()
         if steps[1] >= buffer_size:
             agent2.update()
@@ -119,7 +121,8 @@ def train(n_episodes=100, seed=0, buffer_size=100, ac_kwargs=dict()):
     return agent1, agent2
 
 if __name__ == '__main__':
-    agent1, agent2 = train(n_episodes=500, buffer_size=1000)
+    agent1, agent2 = train(n_episodes=11_000, buffer_size=100_000)
+    # agent1, agent2 = train(n_episodes=10_000, buffer_size=100)
 
     # env = connect_four_v3.env(render_mode="human")
     env = connect_four_v3.env(render_mode="rgb_array")
