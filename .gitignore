@@ -1,5 +1,6 @@
 *.tar
 *.pt
+*.mp4
 *.npz
 *.csv
 rl/q-learning/joke.txt
