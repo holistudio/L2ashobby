@@ -16,11 +16,15 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
     torch.manual_seed(seed)
     np.random.seed(seed)
 
+    # device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+
     env = tetris.Tetris()
 
     agent = PPOAgent(env.single_observation_space, env.single_action_space,
                      local_steps_per_epoch=buffer_size,
-                     hidden_sizes=(1024,1024), activation=nn.ReLU)
+                     hidden_sizes=(1024,1024), activation=nn.ReLU, device=device)
     print(agent.mlp_ac.pi.logits_net)
     print()
 
@@ -38,15 +42,15 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
         while not done:
             # action = env.action_space.sample()
-            obs = torch.as_tensor(obs, dtype=torch.float32)
+            obs = torch.as_tensor(obs, dtype=torch.float32).to(device)
             a, v, logp = agent.step(obs)
-            action = a
+            action = a.cpu()
 
             next_obs, r, terminated, truncated, info = env.step(action)
             steps += 1
             # frame = env.render() # comment out if you want headless training
 
-            reward = r[0]
+            reward = r[0].item()
             ep_ret += reward
             ep_len += 1
             buf.store(obs, a, reward, v, logp)
@@ -61,7 +65,7 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
                 if truncated:
                     print(f"Episode {ep} truncated!")
                     # if trajectory didn't reach terminal state, bootstrap value target
-                    obs = torch.as_tensor(obs, dtype=torch.float32)
+                    obs = torch.as_tensor(obs, dtype=torch.float32).to(device)
                     _, v, _ = agent.step(obs)
                 else:
                     v = 0

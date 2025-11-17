@@ -52,13 +52,13 @@ class PPOBuffer:
     """
 
     def __init__(self, obs_dim, act_dim, size, gamma=0.99, lam=0.95):
-        self.obs_buf = np.zeros(combined_shape(size, obs_dim), dtype=np.float32)
-        self.act_buf = np.zeros(combined_shape(size, act_dim), dtype=np.float32)
-        self.adv_buf = np.zeros(size, dtype=np.float32)
-        self.rew_buf = np.zeros(size, dtype=np.float32)
-        self.ret_buf = np.zeros(size, dtype=np.float32)
-        self.val_buf = np.zeros(size, dtype=np.float32)
-        self.logp_buf = np.zeros(size, dtype=np.float32)
+        self.obs_buf = torch.zeros(combined_shape(size, obs_dim), dtype=torch.float32)
+        self.act_buf = torch.zeros(combined_shape(size, act_dim), dtype=torch.float32)
+        self.adv_buf = torch.zeros(size, dtype=torch.float32)
+        self.rew_buf = torch.zeros(size, dtype=torch.float32)
+        self.ret_buf = torch.zeros(size, dtype=torch.float32)
+        self.val_buf = torch.zeros(size, dtype=torch.float32)
+        self.logp_buf = torch.zeros(size, dtype=torch.float32)
         self.gamma, self.lam = gamma, lam
         self.ptr, self.path_start_idx, self.max_size = 0, 0, size
         self.full = False
@@ -94,15 +94,15 @@ class PPOBuffer:
         """
 
         path_slice = slice(self.path_start_idx, self.ptr)
-        rews = np.append(self.rew_buf[path_slice], last_val)
-        vals = np.append(self.val_buf[path_slice], last_val)
+        rews = torch.cat((self.rew_buf[path_slice], torch.tensor([last_val])))
+        vals = torch.cat((self.val_buf[path_slice], torch.tensor([last_val])))
         
         # the next two lines implement GAE-Lambda advantage calculation
         deltas = rews[:-1] + self.gamma * vals[1:] - vals[:-1]
-        self.adv_buf[path_slice] = discount_cumsum(deltas, self.gamma * self.lam)
+        self.adv_buf[path_slice] = torch.from_numpy(discount_cumsum(deltas.numpy(), self.gamma * self.lam).copy())
         
         # the next line computes rewards-to-go, to be targets for the value function
-        self.ret_buf[path_slice] = discount_cumsum(rews, self.gamma)[:-1]
+        self.ret_buf[path_slice] = torch.from_numpy(discount_cumsum(rews.numpy(), self.gamma)[:-1].copy())
         
         self.path_start_idx = self.ptr
 
@@ -117,11 +117,11 @@ class PPOBuffer:
         assert self.full   # buffer has to be full before you can get
         self.ptr, self.path_start_idx = 0, 0
         # the next two lines implement the advantage normalization trick
-        adv_mean, adv_std = mpi_statistics_scalar(self.adv_buf)
+        adv_mean, adv_std = mpi_statistics_scalar(self.adv_buf.numpy())
         self.adv_buf = (self.adv_buf - adv_mean) / adv_std
         data = dict(obs=self.obs_buf, act=self.act_buf, ret=self.ret_buf,
                     adv=self.adv_buf, logp=self.logp_buf)
-        return {k: torch.as_tensor(v, dtype=torch.float32) for k,v in data.items()}
+        return data
 
 
 class Actor(nn.Module):
@@ -189,10 +189,11 @@ class MLPActorCritic(nn.Module):
 
 
     def __init__(self, observation_space, action_space, 
-                 hidden_sizes=(64,64), activation=nn.Tanh):
+                 hidden_sizes=(64,64), activation=nn.Tanh, device=None):
         super().__init__()
 
         obs_dim = observation_space.shape[0]
+        self.device = device
 
         # policy builder depends on action space
         if isinstance(action_space, Box):
@@ -209,7 +210,7 @@ class MLPActorCritic(nn.Module):
             a = pi.sample()
             logp_a = self.pi._log_prob_from_distribution(pi, a)
             v = self.v(obs)
-        return a.numpy(), v.numpy(), logp_a.numpy()
+        return a, v, logp_a
 
     def act(self, obs):
         return self.step(obs)[0]
@@ -218,15 +219,19 @@ class MLPActorCritic(nn.Module):
 class PPOAgent(object):
     def __init__(self, observation_space, action_space, 
                  hidden_sizes=(64,64), activation=nn.Tanh,
-                 local_steps_per_epoch=4000, gamma=0.99, lam=0.97,
+                 local_steps_per_epoch=4000, gamma=0.99, lam=0.97, device=None,
                  clip_ratio=0.2, train_pi_iters=80, train_v_iters=80, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.01):
         
         obs_dim = observation_space.shape
         act_dim = action_space.shape
 
+        self.device = device
+
         self.buffer = PPOBuffer(obs_dim, act_dim, local_steps_per_epoch, gamma, lam)
 
-        self.mlp_ac = MLPActorCritic(observation_space, action_space, hidden_sizes, activation)
+        self.mlp_ac = MLPActorCritic(observation_space, action_space, hidden_sizes, activation, device)
+        if self.device:
+            self.mlp_ac.to(self.device)
 
         self.clip_ratio = clip_ratio
         self.train_pi_iters = train_pi_iters
@@ -270,6 +275,9 @@ class PPOAgent(object):
     
     def update(self):
         data = self.buffer.get()
+
+        # data = self.buffer.get()
+        data = {k: v.to(self.device) for k, v in data.items()}
 
         pi_l_old, pi_info_old = self.compute_loss_pi(data)
         pi_l_old = pi_l_old.item()
