@@ -22,6 +22,7 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
                      local_steps_per_epoch=buffer_size,
                      hidden_sizes=(1024,1024), activation=nn.ReLU)
     print(agent.mlp_ac.pi.logits_net)
+    print()
 
     buf = agent.buffer
     steps = 0
@@ -79,4 +80,5 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
     pass
 
 if __name__ == '__main__':
+    print()
     train(print_every=50)
