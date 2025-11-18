@@ -7,6 +7,28 @@ from agent import PPOAgent
 
 from utils.mpi_pytorch import setup_pytorch_for_mpi
 
+def print_state(obs):
+    print()
+    print('Game Grid')
+    print(obs[0][:200])
+    print()
+    print('+ Game States')
+    print(obs[0][200:206])
+    print()
+    print('Tetris Pieces')
+    print('Current Piece')
+    print(obs[0][206:206+7])
+    print('Preview 1')
+    print(obs[0][206+7:206+14])
+    print('Preview 2')
+    print(obs[0][206+14:206+21])
+    print('Hold Piece')
+    print(obs[0][206+21:206+28])
+    print()
+    print('Noise')
+    print(obs[0][-10:])
+    pass
+
 def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
      # Special function to avoid certain slowdowns from PyTorch + MPI combo.
     setup_pytorch_for_mpi()
@@ -42,6 +64,7 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
         while not done:
             # action = env.action_space.sample()
+            # print_state(obs)
             obs = torch.as_tensor(obs, dtype=torch.float32).to(device)
             a, v, logp = agent.step(obs)
             action = a.cpu()
@@ -85,4 +108,4 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
 if __name__ == '__main__':
     print()
-    train(print_every=50)
+    train(n_episodes=1, print_every=50)
