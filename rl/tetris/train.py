@@ -73,7 +73,7 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
                 buf.finish_path(v)
 
                 if (ep) % print_every == 0 or ep == (n_episodes-1): 
-                    print(f"Episode {ep} | Total reward: {total_reward:.2f}, Total Length: {ep_len}")
+                    print(f"Episode {ep} | Total reward: {total_reward:.2f}, Game length: {ep_len} timesteps")
                 (obs, _), ep_ret, ep_len = env.reset(), 0, 0
 
         if steps >= buffer_size:
