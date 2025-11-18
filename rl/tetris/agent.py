@@ -157,23 +157,6 @@ class MLPCategoricalActor(Actor):
         return pi.log_prob(act)
 
 
-class MLPGaussianActor(Actor):
-
-    def __init__(self, obs_dim, act_dim, hidden_sizes, activation):
-        super().__init__()
-        log_std = -0.5 * np.ones(act_dim, dtype=np.float32)
-        self.log_std = torch.nn.Parameter(torch.as_tensor(log_std))
-        self.mu_net = mlp([obs_dim] + list(hidden_sizes) + [act_dim], activation)
-
-    def _distribution(self, obs):
-        mu = self.mu_net(obs)
-        std = torch.exp(self.log_std)
-        return Normal(mu, std)
-
-    def _log_prob_from_distribution(self, pi, act):
-        return pi.log_prob(act).sum(axis=-1)    # Last axis sum needed for Torch Normal distribution
-
-
 class MLPCritic(nn.Module):
 
     def __init__(self, obs_dim, hidden_sizes, activation):
@@ -184,25 +167,81 @@ class MLPCritic(nn.Module):
         return torch.squeeze(self.v_net(obs), -1) # Critical to ensure v has right shape.
 
 
-
-class MLPActorCritic(nn.Module):
-
-
-    def __init__(self, observation_space, action_space, 
-                 hidden_sizes=(64,64), activation=nn.Tanh, device=None):
+class CNNBase(nn.Module):
+    def __init__(self, observation_space, activation=nn.Tanh, hidden_dim=9):
         super().__init__()
-
         obs_dim = observation_space.shape[0]
+        self.grid_cells = 20 * 10
+
+        # --- CNN for the 20x10 grid ---
+        self.cnn = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1),
+            activation(),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # Output: 16 x 10 x 5
+            nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
+            activation(),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # Output: 32 x 5 x 2
+            nn.Flatten(),
+            nn.Linear(32 * 5 * 2, hidden_dim),
+            activation()
+        )
+
+        # --- MLP for the other features ---
+        self.mlp = nn.Sequential(
+            nn.Linear(obs_dim - self.grid_cells, 32),
+            activation(),
+            nn.Linear(32, hidden_dim),
+            activation()
+        )
+
+    def forward(self, obs):
+        # Split observation into grid and other features
+        grid_obs = obs[:, :self.grid_cells].view(-1, 1, 20, 10)  # Reshape to (N, C, H, W)
+        other_obs = obs[:, self.grid_cells:]
+
+        # Process inputs through respective networks
+        cnn_out = self.cnn(grid_obs)
+        mlp_out = self.mlp(other_obs)
+
+        # Concatenate features
+        return torch.cat([cnn_out, mlp_out], dim=-1)
+
+
+class CNNCategoricalActor(Actor):
+    def __init__(self, observation_space, action_space, activation=nn.Tanh, hidden_dim=7):
+        super().__init__()
+        self.base = CNNBase(observation_space, activation, hidden_dim)
+        self.pi_head = nn.Linear(hidden_dim * 2, action_space.n)
+
+    def _distribution(self, obs):
+        base_out = self.base(obs)
+        logits = self.pi_head(base_out)
+        return Categorical(logits=logits)
+
+    def _log_prob_from_distribution(self, pi, act):
+        return pi.log_prob(act)
+
+
+class CNNCritic(nn.Module):
+    def __init__(self, observation_space, activation=nn.Tanh, hidden_dim=7):
+        super().__init__()
+        self.base = CNNBase(observation_space, activation, hidden_dim)
+        self.v_head = nn.Linear(hidden_dim * 2, 1)
+
+    def forward(self, obs):
+        base_out = self.base(obs)
+        value = self.v_head(base_out)
+        return torch.squeeze(value, -1)  # Critical to ensure v has right shape.
+
+
+class CNNActorCritic(nn.Module):
+    def __init__(self, observation_space, action_space, hidden_dim=7, activation=nn.Tanh, device=None):
+        super().__init__()
         self.device = device
-
-        # policy builder depends on action space
-        if isinstance(action_space, Box):
-            self.pi = MLPGaussianActor(obs_dim, action_space.shape[0], hidden_sizes, activation)
-        elif isinstance(action_space, Discrete):
-            self.pi = MLPCategoricalActor(obs_dim, action_space.n, hidden_sizes, activation)
-
+        # policy builder
+        self.pi = CNNCategoricalActor(observation_space, action_space, activation, hidden_dim)
         # build value function
-        self.v  = MLPCritic(obs_dim, hidden_sizes, activation)
+        self.v = CNNCritic(observation_space, activation, hidden_dim)
 
     def step(self, obs):
         with torch.no_grad():
@@ -214,11 +253,10 @@ class MLPActorCritic(nn.Module):
 
     def act(self, obs):
         return self.step(obs)[0]
-    
 
 class PPOAgent(object):
     def __init__(self, observation_space, action_space, 
-                 hidden_sizes=(64,64), activation=nn.Tanh,
+                 final_h=7, activation=nn.Tanh,
                  local_steps_per_epoch=4000, gamma=0.99, lam=0.97, device=None,
                  clip_ratio=0.2, train_pi_iters=80, train_v_iters=80, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.01):
         
@@ -229,32 +267,35 @@ class PPOAgent(object):
 
         self.buffer = PPOBuffer(obs_dim, act_dim, local_steps_per_epoch, gamma, lam)
 
-        self.mlp_ac = MLPActorCritic(observation_space, action_space, hidden_sizes, activation, device)
+        # Use CNNActorCritic instead of MLPActorCritic
+        # Note: hidden_sizes is not used by CNNActorCritic in this implementation
+        self.cnn_ac = CNNActorCritic(observation_space, action_space, final_h, activation, device)
+
         if self.device:
-            self.mlp_ac.to(self.device)
+            self.cnn_ac.to(self.device)
 
         self.clip_ratio = clip_ratio
         self.train_pi_iters = train_pi_iters
         self.train_v_iters = train_v_iters
 
         # Set up optimizers for policy and value function
-        self.pi_optimizer = Adam(self.mlp_ac.pi.parameters(), lr=pi_lr)
-        self.vf_optimizer = Adam(self.mlp_ac.v.parameters(), lr=vf_lr)
+        self.pi_optimizer = Adam(self.cnn_ac.pi.parameters(), lr=pi_lr)
+        self.vf_optimizer = Adam(self.cnn_ac.v.parameters(), lr=vf_lr)
 
         self.target_kl = target_kl
         pass
     def step(self, obs):
-        return self.mlp_ac.step(obs)
+        return self.cnn_ac.step(obs)
     
     def act(self, obs):
-        return self.mlp_ac.act(obs)
+        return self.cnn_ac.act(obs)
     
     # Set up function for computing PPO policy loss
     def compute_loss_pi(self, data):
         obs, act, adv, logp_old = data['obs'], data['act'], data['adv'], data['logp']
 
         # Policy loss
-        pi, logp = self.mlp_ac.pi(obs, act)
+        pi, logp = self.cnn_ac.pi(obs, act)
         ratio = torch.exp(logp - logp_old)
         clip_adv = torch.clamp(ratio, 1-self.clip_ratio, 1+self.clip_ratio) * adv
         loss_pi = -(torch.min(ratio * adv, clip_adv)).mean()
@@ -271,7 +312,7 @@ class PPOAgent(object):
     # Set up function for computing value loss
     def compute_loss_v(self, data):
         obs, ret = data['obs'], data['ret']
-        return ((self.mlp_ac.v(obs) - ret)**2).mean()
+        return ((self.cnn_ac.v(obs) - ret)**2).mean()
     
     def update(self):
         data = self.buffer.get()
@@ -292,7 +333,7 @@ class PPOAgent(object):
                 # print('Early stopping at step %d due to reaching max kl.'%i)
                 break
             loss_pi.backward()
-            mpi_avg_grads(self.mlp_ac.pi)    # average grads across MPI processes
+            mpi_avg_grads(self.cnn_ac.pi)  # average grads across MPI processes
             self.pi_optimizer.step()
 
         # Value function learning
@@ -300,5 +341,5 @@ class PPOAgent(object):
             self.vf_optimizer.zero_grad()
             loss_v = self.compute_loss_v(data)
             loss_v.backward()
-            mpi_avg_grads(self.mlp_ac.v)    # average grads across MPI processes
+            mpi_avg_grads(self.cnn_ac.v)  # average grads across MPI processes
             self.vf_optimizer.step()
