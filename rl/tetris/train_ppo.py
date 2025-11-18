@@ -45,9 +45,9 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
     env = tetris.Tetris()
 
     agent = PPOAgent(env.single_observation_space, env.single_action_space,
-                     local_steps_per_epoch=buffer_size,
-                     hidden_sizes=(1024,1024), activation=nn.ReLU, device=device)
-    print(agent.mlp_ac.pi.logits_net)
+                     local_steps_per_epoch=buffer_size,final_h=32, activation=nn.ReLU, device=device)
+    # print(agent.mlp_ac.pi.logits_net)
+    print(agent.cnn_ac)
     print()
 
     buf = agent.buffer
@@ -65,13 +65,18 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
         while not done:
             # action = env.action_space.sample()
             # print_state(obs)
+
+            # tetris game states can =2 for current falling
+            obs[0,:200] = obs[0,:200] / np.max(obs[0, :200]) # normalize all values to 0-1 range
+
             obs = torch.as_tensor(obs, dtype=torch.float32).to(device)
             a, v, logp = agent.step(obs)
             action = a.cpu()
 
             next_obs, r, terminated, truncated, info = env.step(action)
             steps += 1
-            # frame = env.render() # comment out if you want headless training
+            if ep == (n_episodes-1):
+                frame = env.render() # comment out if you want headless training
 
             reward = r[0].item()
             ep_ret += reward
@@ -97,7 +102,6 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
                 if (ep) % print_every == 0 or ep == (n_episodes-1): 
                     print(f"Episode {ep} | Total reward: {total_reward:.2f}, Game length: {ep_len} timesteps")
-                (obs, _), ep_ret, ep_len = env.reset(), 0, 0
 
         if steps >= buffer_size:
             # agent update
@@ -108,4 +112,4 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
 if __name__ == '__main__':
     print()
-    train(n_episodes=1, print_every=50)
+    train(n_episodes=500, print_every=50)
