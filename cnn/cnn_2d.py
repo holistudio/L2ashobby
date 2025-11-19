@@ -103,8 +103,7 @@ class cnn_2d_maxres(nn.Module):
 
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=28, kernel_size=4, stride=1)
         self.max_pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv2 = nn.Conv2d(in_channels=28, out_channels=28, kernel_size=3, stride=1)
-        # self.max_pool2 = nn.MaxPool2d(kernel_size=2, stride=2) # depending on the input size it may not always make sense to have many max pool layers
+        self.res_block1 = ResidualBlock(in_channels=28, out_channels=28, kernel_size=3, stride=1, activation=activation)
 
         self.flatten = nn.Flatten(0)
 
@@ -123,8 +122,8 @@ class cnn_2d_maxres(nn.Module):
         x = self.activation(x)
         x = self.max_pool1(x)
         print(f'max_pool1 => {x.shape}')
-        x = self.conv2(x)
-        print(f'conv2 => {x.shape}')
+        x = self.res_block1(x)
+        print(f'res_block1 => {x.shape}')
 
         # x = self.max_pool2(x)
         # print(f'max_pool2 => {x.shape}')
