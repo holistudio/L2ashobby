@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
+import datetime
 
 from pufferlib.ocean.tetris import tetris
 from agent import PPOAgent
@@ -53,8 +54,8 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
     buf = agent.buffer
     steps = 0
     
-
-
+    start_time = datetime.datetime.now()
+    print(start_time)
     for ep in range(n_episodes):
         obs, info = env.reset()
         ep_ret, ep_len =  0, 0
@@ -101,7 +102,7 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
                 buf.finish_path(v)
 
                 if (ep) % print_every == 0 or ep == (n_episodes-1): 
-                    print(f"Episode {ep} | Total reward: {total_reward:.2f}, Game length: {ep_len} timesteps")
+                    print(f"{datetime.datetime.now()-start_time} Episode {ep}, Total steps: {steps} | Total reward: {total_reward:.2f}, Game length: {ep_len} timesteps")
 
         if steps >= buffer_size:
             # agent update
@@ -112,4 +113,5 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
 if __name__ == '__main__':
     print()
-    train(n_episodes=500, print_every=50)
+
+    train(n_episodes=2_000, print_every=100)
