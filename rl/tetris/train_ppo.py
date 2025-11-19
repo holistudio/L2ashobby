@@ -44,8 +44,8 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
     env = tetris.Tetris()
 
-    agent = PPOAgent(env.single_observation_space, env.single_action_space,
-                     local_steps_per_epoch=buffer_size,final_h=32, activation=nn.ReLU, device=device)
+    agent = PPOAgent(env.single_observation_space, env.single_action_space, activation=nn.ReLU,
+                     local_steps_per_epoch=buffer_size, device=device)
     # print(agent.mlp_ac.pi.logits_net)
     print(agent.cnn_ac)
     print()
