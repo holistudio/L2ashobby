@@ -91,8 +91,10 @@ class ResidualBlock(nn.Module):
         self.activation = activation()
 
     def forward(self, x):
+        print(f'{x.shape} => res_block')
         residual = x
         out = self.activation(self.conv(x))
+        print(f'res_conv => {x.shape}')
         # Add the residual connection
         out += residual
         return self.activation(out)
@@ -107,8 +109,8 @@ class cnn_2d_maxres(nn.Module):
 
         self.flatten = nn.Flatten(0)
 
-        self.fc1 = nn.Linear(196, 196*4)
-        self.fc2 = nn.Linear(196*4, 7)
+        self.fc1 = nn.Linear(756, 756*4)
+        self.fc2 = nn.Linear(756*4, 7)
         
         self.activation = activation()
 
@@ -151,5 +153,10 @@ if __name__ == '__main__':
 
     print()
     model = cnn_2d_maxpool()
+    model.to(device)
+    model(input_data)
+
+    print()
+    model = cnn_2d_maxres()
     model.to(device)
     model(input_data)
