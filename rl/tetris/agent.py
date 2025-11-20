@@ -234,8 +234,8 @@ class PPOBuffer:
 
 class PPOAgent(object):
     def __init__(self, observation_space, action_space, activation=nn.Tanh,
-                 local_steps_per_epoch=4000, gamma=0.99, lam=0.97, device=None,
-                 clip_ratio=0.2, train_pi_iters=80, train_v_iters=80, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.01):
+                 local_steps_per_epoch=4096, gamma=0.99, lam=0.95, device=None,
+                 clip_ratio=0.1, train_pi_iters=10, train_v_iters=10, pi_lr=3e-4, vf_lr=1e-3, target_kl=0.015):
         
         obs_dim = observation_space.shape
         act_dim = action_space.shape
