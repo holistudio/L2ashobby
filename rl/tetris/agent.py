@@ -260,18 +260,24 @@ class PPOAgent(object):
         pass
     
     def focus_obs(self, obs):
-        grid = obs[0,:200].reshape((20,10))
+        batch_size = obs.shape[0]
 
-        current_piece = obs[0,206:206+7]
-        current_row = obs[0,200+2].unsqueeze(0)
-        current_col = obs[0,200+3].unsqueeze(0)
+        # Reshape the grid part of the observation, preserving the batch dimension.
+        grid = obs[:,:200].view(batch_size, 20, 10)
 
-        add_grid_row = torch.cat((current_piece, current_row, current_col, torch.zeros(1, dtype=torch.float32, device=device)))
-        add_grid_row = add_grid_row.unsqueeze(0)
-        add_grid_row.to(device)
+        # Extract the piece, row, and column information.
+        current_piece = obs[:,206:206+7]
+        current_row = obs[:,202:203] # Slice to keep dim: (batch_size, 1)
+        current_col = obs[:,203:204] # Slice to keep dim: (batch_size, 1)
 
-        out = torch.cat((grid,add_grid_row),dim=0)
-        out = out.unsqueeze(0).unsqueeze(0)
+        # Create a padding tensor that matches the batch size.
+        padding = torch.zeros((batch_size, 1), dtype=torch.float32, device=obs.device)
+
+        # Construct the additional row and add a dimension for concatenation.
+        add_grid_row = torch.cat((current_piece, current_row, current_col, padding), dim=-1).unsqueeze(1)
+
+        # Concatenate the new row to the grid and add the channel dimension for the CNN.
+        out = torch.cat((grid, add_grid_row), dim=1).unsqueeze(1)
         return out
     
     def step(self, obs):
@@ -285,7 +291,6 @@ class PPOAgent(object):
     # Set up function for computing PPO policy loss
     def compute_loss_pi(self, data):
         obs, act, adv, logp_old = data['obs'], data['act'], data['adv'], data['logp']
-
         # Policy loss
         out = self.focus_obs(obs)
         pi, logp = self.cnn_ac.pi(out, act)
