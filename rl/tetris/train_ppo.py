@@ -72,7 +72,7 @@ def train(n_episodes=500, buffer_size=4000, seed=0, print_every=50):
 
             obs = torch.as_tensor(obs, dtype=torch.float32).to(device)
             a, v, logp = agent.step(obs)
-            action = a.cpu()
+            action = a.cpu().item()
 
             next_obs, r, terminated, truncated, info = env.step(action)
             steps += 1
