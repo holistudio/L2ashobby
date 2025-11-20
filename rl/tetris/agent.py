@@ -38,56 +38,59 @@ def discount_cumsum(x, discount):
 def count_vars(module):
     return sum([np.prod(p.shape) for p in module.parameters()])
 
+# A more robust Residual Block inspired by modern CNN architectures (e.g., ResNet)
 class ResidualBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride, activation=nn.ReLU):
+    def __init__(self, channels, activation=nn.ReLU):
         super(ResidualBlock, self).__init__()
-        # Padding is set to maintain height and width.
-        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding=1)
+        self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(channels)
+        self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
+        self.bn2 = nn.BatchNorm2d(channels)
         self.activation = activation()
 
     def forward(self, x):
         residual = x
-        out = self.activation(self.conv(x))
-        # Add the residual connection out-of-place
+        out = self.activation(self.bn1(self.conv1(x)))
+        out = self.bn2(self.conv2(out))
         out = out + residual
         return self.activation(out)
     
+# A deeper CNN architecture inspired by MuZero's network design.
 class CNN(nn.Module):
-    def __init__(self, output_size, activation=nn.ReLU):
+    def __init__(self, activation=nn.ReLU, num_res_blocks=8, res_channels=64):
         super().__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=28, kernel_size=4, stride=1)
-        self.max_pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.res_block1 = ResidualBlock(in_channels=28, out_channels=28, kernel_size=3, stride=1, activation=activation)
-
-        self.fc1 = nn.Linear(756, 756*4)
-        self.fc2 = nn.Linear(756*4, output_size)
-        
+        # Initial convolution to increase channels and capture basic features
+        self.initial_conv = nn.Conv2d(in_channels=1, out_channels=res_channels, kernel_size=3, stride=1, padding=1)
+        self.initial_bn = nn.BatchNorm2d(res_channels)
         self.activation = activation()
 
-        pass
-    
+        # A "tower" of residual blocks to build deep features
+        self.residual_tower = nn.Sequential(
+            *[ResidualBlock(res_channels, activation) for _ in range(num_res_blocks)]
+        )
+
+        # The output from the residual tower will be flattened.
+        # For a (1, 21, 10) input, the conv output is (res_channels, 21, 10)
+        # because of padding.
+        self.flattened_size = res_channels * 21 * 10
+
     def forward(self, x):
-        # convolutional layers
-        x = self.conv1(x)
-        x = self.activation(x)
-        x = self.max_pool1(x)
-        x = self.res_block1(x)
-
-        # Flatten the conv2 output for the subsequent linear layers
-        x = x.view(-1, x.shape[0] * x.shape[1]* x.shape[2])
-
-        # fully-connected layers
-        x = self.activation(x)
-        x = self.fc1(x)
-        x = self.activation(x)
-        x = self.fc2(x)
-        return x
+        # The CNN body (representation function in MuZero terms)
+        features = self.activation(self.initial_bn(self.initial_conv(x)))
+        features = self.residual_tower(features)
+        features = features.view(-1, self.flattened_size)
+        return features
     
 class CNNCategoricalActor(nn.Module):
-    def __init__(self, obs_dim, act_dim, activation):
+    def __init__(self, body_net, action_dim, activation=nn.ReLU):
         super().__init__()
-        self.logits_net = CNN(output_size=act_dim, activation=activation)
+        self.body = body_net
+        self.policy_head = nn.Sequential(
+            nn.Linear(self.body.flattened_size, 256),
+            activation(),
+            nn.Linear(256, action_dim)
+        )
 
     def forward(self, obs, act=None):
         # Produce action distributions for given observations, and 
@@ -100,7 +103,8 @@ class CNNCategoricalActor(nn.Module):
         return pi, logp_a
 
     def _distribution(self, obs):
-        logits = self.logits_net(obs)
+        features = self.body(obs)
+        logits = self.policy_head(features)
         return Categorical(logits=logits)
 
     def _log_prob_from_distribution(self, pi, act):
@@ -108,12 +112,19 @@ class CNNCategoricalActor(nn.Module):
     
 class CNNCritic(nn.Module):
 
-    def __init__(self, obs_dim, activation):
+    def __init__(self, body_net, activation=nn.ReLU):
         super().__init__()
-        self.v_net = CNN(output_size=1, activation=activation)
+        self.body = body_net
+        self.value_head = nn.Sequential(
+            nn.Linear(self.body.flattened_size, 256),
+            activation(),
+            nn.Linear(256, 1)
+        )
 
     def forward(self, obs):
-        return torch.squeeze(self.v_net(obs), -1) # Critical to ensure v has right shape.
+        features = self.body(obs)
+        value = self.value_head(features)
+        return torch.squeeze(value, -1) # Critical to ensure v has right shape.
     
 class CNNActorCritic(nn.Module):
     def __init__(self, observation_space, action_space, activation=nn.Tanh, device=None):
@@ -122,11 +133,13 @@ class CNNActorCritic(nn.Module):
         obs_dim = 21*10 # observation_space.shape[0] 
         self.device = device
 
-        # policy builder 
-        self.pi = CNNCategoricalActor(obs_dim, action_space.n, activation)
+        # Create a single shared CNN body
+        body_net = CNN(activation=activation)
 
+        # policy builder 
+        self.pi = CNNCategoricalActor(body_net=body_net, action_dim=action_space.n, activation=activation)
         # build value function
-        self.v  = CNNCritic(obs_dim, activation)
+        self.v  = CNNCritic(body_net=body_net, activation=activation)
 
     def step(self, obs):
         with torch.no_grad():
@@ -258,7 +271,7 @@ class PPOAgent(object):
         add_grid_row.to(device)
 
         out = torch.cat((grid,add_grid_row),dim=0)
-        out = out.unsqueeze(0)
+        out = out.unsqueeze(0).unsqueeze(0)
         return out
     
     def step(self, obs):
