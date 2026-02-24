@@ -194,3 +194,5 @@ nlp/llms/sms_spam_collection.zip
 /nlp/llms/sms_spam_collection
 nlp/llms/review_classifier.pth
 nlp/llms/instruction-data.json
+nlp/llms/instruction-data-with-response.json
+nlp/llms/gpt2-medium355M-sft.pth
